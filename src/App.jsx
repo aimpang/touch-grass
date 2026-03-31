@@ -192,7 +192,7 @@ export default function App() {
             onSelectEvent={setSelectedEvent}
             pinnedIds={pinnedIds}
             onTogglePin={togglePin}
-            panelCollapsed={false}
+            panelCollapsed={!sheetExpanded}
             onAbout={() => setShowAbout(true)}
             mobile
           />
@@ -201,7 +201,7 @@ export default function App() {
           <div
             className="absolute bottom-0 left-0 right-0 z-[1100] flex flex-col will-change-transform"
             style={{
-              height: '75vh',
+              height: '50vh',
               transform: sheetExpanded ? 'translateY(0)' : `translateY(calc(100% - 48px))`,
               transition: 'transform 0.25s ease-out',
               background: 'var(--panel-bg-solid)',

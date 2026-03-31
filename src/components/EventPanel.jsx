@@ -214,30 +214,33 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                 </div>
               </div>
 
-              {/* Search + Radius — always visible */}
-              <div className="mb-3">
-                <RadiusSlider value={radius} onChange={onRadiusChange} />
-              </div>
-
-              <div className="relative mb-3">
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search events, venues..."
-                  className="w-full text-[11px] pl-7 pr-7 py-1.5 rounded-lg outline-none transition-colors"
-                  style={{ background: 'var(--surface-overlay)', border: '1px solid var(--border)', color: 'var(--text)' }}
-                />
-                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] opacity-40">🔍</span>
-                {search && (
-                  <button
-                    onClick={() => setSearch('')}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] opacity-40 hover:opacity-80"
-                  >
-                    ✕
-                  </button>
-                )}
-              </div>
+              {/* Search + Radius — top on desktop, bottom of list on mobile */}
+              {!mobile && (
+                <>
+                  <div className="mb-3">
+                    <RadiusSlider value={radius} onChange={onRadiusChange} />
+                  </div>
+                  <div className="relative mb-3">
+                    <input
+                      type="text"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      placeholder="Search events, venues..."
+                      className="w-full text-[11px] pl-7 pr-7 py-1.5 rounded-lg outline-none transition-colors"
+                      style={{ background: 'var(--surface-overlay)', border: '1px solid var(--border)', color: 'var(--text)' }}
+                    />
+                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] opacity-40">🔍</span>
+                    {search && (
+                      <button
+                        onClick={() => setSearch('')}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] opacity-40 hover:opacity-80"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                </>
+              )}
 
               {/* Mobile: collapsible filter toggle */}
               {mobile && (
@@ -415,6 +418,7 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                             onHover={onEventHover}
                             onClick={onEventClick}
                             onPromote={onPromoteEvent}
+                        compact={mobile}
                           />
                         ))}
                       </div>
@@ -435,6 +439,7 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                         onHover={onEventHover}
                         onClick={onEventClick}
                         onPromote={onPromoteEvent}
+                        compact={mobile}
                       />
                     ))}
                   </div>
@@ -477,12 +482,39 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                               onHover={onEventHover}
                               onClick={onEventClick}
                               onPromote={onPromoteEvent}
+                              compact={mobile}
                             />
                           ))}
                         </div>
                       )}
                     </div>
                   )}
+                  {/* Search + Radius — bottom of list on mobile */}
+                  {mobile && (
+                    <div className="mt-4 flex flex-col gap-2.5">
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                          placeholder="Search events, venues..."
+                          className="w-full text-[11px] pl-7 pr-7 py-1.5 rounded-lg outline-none transition-colors"
+                          style={{ background: 'var(--surface-overlay)', border: '1px solid var(--border)', color: 'var(--text)' }}
+                        />
+                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] opacity-40">🔍</span>
+                        {search && (
+                          <button
+                            onClick={() => setSearch('')}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] opacity-40 hover:opacity-80"
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </div>
+                      <RadiusSlider value={radius} onChange={onRadiusChange} />
+                    </div>
+                  )}
+
                   {/* Disclaimer */}
                   <div className="mt-6 mb-2 px-2 py-3 rounded-xl text-center" style={{ background: 'var(--surface-overlay)' }}>
                     <p className="text-[10px] leading-relaxed" style={{ color: 'var(--text-faintest)' }}>

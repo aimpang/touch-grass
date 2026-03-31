@@ -17,7 +17,7 @@ const CAT_STYLE = {
 
 const DEFAULT_STYLE = { color: '#94a3b8', emoji: '📌' };
 
-export default forwardRef(function EventCard({ event, selected, pinned, onTogglePin, onHover, onClick, onPromote }, ref) {
+export default forwardRef(function EventCard({ event, selected, pinned, onTogglePin, onHover, onClick, onPromote, compact }, ref) {
   const timeStr = new Date(event.date).toLocaleTimeString('en-US', {
     hour: 'numeric',
     minute: '2-digit',
@@ -73,13 +73,13 @@ export default forwardRef(function EventCard({ event, selected, pinned, onToggle
         <div className="absolute top-0 left-3 right-3 h-[2px] rounded-full" style={{ background: `linear-gradient(90deg, transparent, ${cat.color}80, transparent)` }} />
       ) : null}
 
-      <div className="p-3.5">
+      <div className={compact ? 'p-2.5' : 'p-3.5'}>
         {/* Category emoji + status row */}
-        <div className="flex items-center justify-between mb-2.5">
-          <div className="flex items-center gap-2">
-            <span className="text-base leading-none">{cat.emoji}</span>
+        <div className={`flex items-center justify-between ${compact ? 'mb-1.5' : 'mb-2.5'}`}>
+          <div className="flex items-center gap-1.5">
+            <span className={`${compact ? 'text-sm' : 'text-base'} leading-none`}>{cat.emoji}</span>
             <span
-              className="text-[10px] font-bold uppercase tracking-wider"
+              className={`${compact ? 'text-[9px]' : 'text-[10px]'} font-bold uppercase tracking-wider`}
               style={{ color: `${cat.color}cc` }}
             >
               {event.category}
@@ -109,17 +109,17 @@ export default forwardRef(function EventCard({ event, selected, pinned, onToggle
         </div>
 
         {/* Title */}
-        <h3 className="text-[13px] font-bold leading-snug line-clamp-2 mb-1" style={{ color: 'var(--text)' }}>
+        <h3 className={`${compact ? 'text-[11px]' : 'text-[13px]'} font-bold leading-snug line-clamp-2 mb-1`} style={{ color: 'var(--text)' }}>
           {event.name}
         </h3>
 
         {/* Venue with subtle icon */}
-        <p className="text-[11px] truncate mb-2.5" style={{ color: 'var(--text-faint)' }}>
+        <p className={`${compact ? 'text-[10px] mb-1.5' : 'text-[11px] mb-2.5'} truncate`} style={{ color: 'var(--text-faint)' }}>
           📍 {event.venue}
         </p>
 
         {/* Bottom bar */}
-        <div className="flex items-center pt-2 border-t gap-1.5" style={{ borderColor: `${cat.color}0a` }}>
+        <div className={`flex items-center ${compact ? 'pt-1.5' : 'pt-2'} border-t gap-1.5`} style={{ borderColor: `${cat.color}0a` }}>
           <span className="text-[10px] font-medium truncate" style={{ color: 'var(--text-faint)' }}>
             {dayStr} · {timeStr}
           </span>
