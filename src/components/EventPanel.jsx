@@ -396,8 +396,12 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                   {/* Promoted events — sticky on desktop, inline on mobile */}
                   {!mobile && sortedEvents.some((e) => e.promoted) && (
                     <div
-                      className="sticky -top-3 z-20 pb-2 -mx-3 px-3 pt-4"
-                      style={{ background: 'var(--panel-bg-solid)' }}
+                      className="sticky -top-3 z-20 -mx-3 px-3 pt-4 pb-3"
+                      style={{
+                        background: 'var(--panel-bg-solid)',
+                        borderBottom: '1px solid var(--border)',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                      }}
                     >
                       <div className="text-[9px] font-bold uppercase tracking-wider mb-1.5 flex items-center gap-1" style={{ color: '#fbbf24' }}>
                         <span>⭐</span> Promoted
@@ -414,11 +418,10 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                             onHover={onEventHover}
                             onClick={onEventClick}
                             onPromote={onPromoteEvent}
-                        compact={mobile}
+                            compact
                           />
                         ))}
                       </div>
-                      <div className="h-px mt-2" style={{ background: 'var(--border)' }} />
                     </div>
                   )}
 
@@ -435,7 +438,7 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                         onHover={onEventHover}
                         onClick={onEventClick}
                         onPromote={onPromoteEvent}
-                        compact={mobile}
+                        compact
                       />
                     ))}
                   </div>
@@ -478,7 +481,7 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                               onHover={onEventHover}
                               onClick={onEventClick}
                               onPromote={onPromoteEvent}
-                              compact={mobile}
+                              compact
                             />
                           ))}
                         </div>
