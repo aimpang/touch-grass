@@ -351,20 +351,20 @@ const circlePathOptions = {
   opacity: 0.3,
 };
 
-// Hide info card during active zoom to avoid expensive repositioning
+// Hide info card during zoom/pan animations so it doesn't appear mispositioned
 function ZoomAwareInfoCard({ selectedEvent, onSelectEvent }) {
   const map = useMap();
-  const [zooming, setZooming] = React.useState(false);
+  const [moving, setMoving] = React.useState(false);
 
   useEffect(() => {
-    const onStart = () => setZooming(true);
-    const onEnd = () => setZooming(false);
-    map.on('zoomstart', onStart);
-    map.on('zoomend', onEnd);
-    return () => { map.off('zoomstart', onStart); map.off('zoomend', onEnd); };
+    const onStart = () => setMoving(true);
+    const onEnd = () => setMoving(false);
+    map.on('zoomstart movestart', onStart);
+    map.on('zoomend moveend', onEnd);
+    return () => { map.off('zoomstart movestart', onStart); map.off('zoomend moveend', onEnd); };
   }, [map]);
 
-  if (!selectedEvent || zooming) return null;
+  if (!selectedEvent || moving) return null;
   return <MapInfoCard event={selectedEvent} onClose={() => onSelectEvent?.(null)} />;
 }
 
