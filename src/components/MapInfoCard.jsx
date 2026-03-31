@@ -40,14 +40,19 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin }) {
   useEffect(() => {
     if (!event) return;
 
+    const mountTime = Date.now();
+
     function update() {
       const pt = map.latLngToContainerPoint([event.lat, event.lng]);
       const mapSize = map.getSize();
       const cardW = mapSize.x < 600 ? CARD_W_MOBILE : CARD_W_DESKTOP;
 
-      // If the blob is off screen, dismiss
+      // If the blob is off screen, dismiss — but not within the first second
+      // (the map may still be settling after a pan/fly animation)
       if (pt.x < -50 || pt.x > mapSize.x + 50 || pt.y < -50 || pt.y > mapSize.y + 50) {
-        onClose();
+        if (Date.now() - mountTime > 1000) {
+          onClose();
+        }
         return;
       }
 
@@ -62,10 +67,12 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin }) {
       setPos({ x: pt.x, y: pt.y, cardW });
     }
 
-    update();
+    // Delay initial position calc to let the map fully settle
+    const initTimer = setTimeout(update, 50);
 
     map.on('moveend zoomend', update);
     return () => {
+      clearTimeout(initTimer);
       map.off('moveend zoomend', update);
     };
   }, [map, event, onClose]);
