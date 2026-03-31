@@ -83,9 +83,8 @@ function buildMarkerIcon(category, state) {
         width: ${dot}px; height: ${dot}px; border-radius: 50%;
         background: rgba(18, 18, 28, ${isActive ? '0.92' : '0.8'});
         border: ${isPromoted ? '2px solid #fbbf24' : `1.5px solid ${color}${isActive ? '99' : '55'}`};
-        box-shadow: ${isPromoted ? `0 0 16px rgba(251,191,36,0.35)` : `0 0 ${isActive ? 16 : 8}px ${color}${isActive ? '40' : '20'}`};
+        ${isActive ? `box-shadow: ${isPromoted ? '0 0 16px rgba(251,191,36,0.35)' : `0 0 16px ${color}40`};` : ''}
         display: flex; align-items: center; justify-content: center;
-        transition: all 0.2s ease;
       ">
         <svg width="${iconSz}" height="${iconSz}" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="display:block;">
           ${svgIcon}
@@ -384,6 +383,7 @@ export default function EventMap({ location, homeLocation: homeLoc, events, radi
       zoomControl={false}
       attributionControl={false}
       preferCanvas={true}
+      markerZoomAnimation={false}
     >
       <TileLayer
         key={theme}
