@@ -64,9 +64,9 @@ export default function MapInfoCard({ event, onClose }) {
 
     update();
 
-    map.on('move zoom moveend zoomend', update);
+    map.on('moveend zoomend', update);
     return () => {
-      map.off('move zoom moveend zoomend', update);
+      map.off('moveend zoomend', update);
     };
   }, [map, event, onClose]);
 

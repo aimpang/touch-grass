@@ -2,7 +2,7 @@ import React from 'react';
 import { MapContainer, TileLayer, Marker, Circle, useMap } from 'react-leaflet';
 import { createPortal } from 'react-dom';
 import L from 'leaflet';
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef, useMemo, useCallback } from 'react';
 import 'leaflet/dist/leaflet.css';
 import { useTheme } from '../hooks/useTheme.jsx';
 import MapInfoCard from './MapInfoCard';
@@ -155,7 +155,7 @@ function FlyToHandler({ center, selectedEvent, lastSelectTime }) {
     }
 
     prevSelectedId.current = newId;
-  });
+  }, [selectedEvent, map, lastSelectTime]);
 
   // Fly to new center when location changes (teleport / go home)
   useEffect(() => {
@@ -299,9 +299,10 @@ const TILES = {
 };
 
 // Only renders markers within the current viewport + a buffer
-function VisibleMarkers({ events, highlightedEvent, selectedEvent, onSelectEvent }) {
+const VisibleMarkers = React.memo(function VisibleMarkers({ events, highlightedEvent, selectedEvent, onSelectEvent }) {
   const map = useMap();
   const [bounds, setBounds] = React.useState(null);
+  const handlersRef = useRef({});
 
   useEffect(() => {
     function update() { setBounds(map.getBounds().pad(0.3)); }
@@ -313,28 +314,39 @@ function VisibleMarkers({ events, highlightedEvent, selectedEvent, onSelectEvent
   if (!bounds) return null;
 
   return events.map((event) => {
-    // Skip markers outside viewport (with 30% buffer)
     if (!bounds.contains([event.lat, event.lng])) return null;
 
     const isSelected = selectedEvent?.id === event.id;
     const isHighlighted = highlightedEvent?.id === event.id;
     const isSpotlight = event.promotionTier === 'spotlight';
     const state = isSelected ? 'selected' : isHighlighted ? 'highlighted' : isSpotlight ? 'promoted' : 'default';
+
+    // Stable event handler reference per event id
+    if (!handlersRef.current[event.id]) {
+      handlersRef.current[event.id] = { click: () => onSelectEvent?.(event) };
+    }
+
     return (
       <Marker
         key={event.id}
         position={[event.lat, event.lng]}
         icon={buildMarkerIcon(event.category, state)}
         zIndexOffset={isSelected ? 2000 : isHighlighted ? 1000 : isSpotlight ? 500 : 0}
-        eventHandlers={{
-          click: () => onSelectEvent?.(event),
-        }}
+        eventHandlers={handlersRef.current[event.id]}
       />
     );
   });
-}
+});
 
 
+
+const circlePathOptions = {
+  color: '#3b82f6',
+  fillColor: '#3b82f6',
+  fillOpacity: 0.04,
+  weight: 1,
+  opacity: 0.3,
+};
 
 export default function EventMap({ location, homeLocation: homeLoc, events, radiusKm, highlightedEvent, selectedEvent, onSelectEvent, panelCollapsed, onAbout, mobile }) {
   const lastSelectTimeRef = useRef(0);
@@ -379,13 +391,7 @@ export default function EventMap({ location, homeLocation: homeLoc, events, radi
       <Circle
         center={center}
         radius={radiusKm * 1000}
-        pathOptions={{
-          color: '#3b82f6',
-          fillColor: '#3b82f6',
-          fillOpacity: 0.04,
-          weight: 1,
-          opacity: 0.3,
-        }}
+        pathOptions={circlePathOptions}
       />
 
       {/* Event markers — viewport-culled for performance */}

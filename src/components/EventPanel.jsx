@@ -237,38 +237,78 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
               {/* Filter chips — always visible on desktop, collapsible on mobile */}
               {(!mobile || filtersExpanded) && (
                 <div style={mobile ? { animation: 'filterSlideIn 0.2s ease-out' } : undefined}>
-                  {/* Time filter chips */}
-                  <div className="flex gap-1.5 mb-2 overflow-x-auto scrollbar-hide">
+                  {/* Time + Price + Category filters — icon-only */}
+                  <div className="flex gap-1.5 mb-2 overflow-x-auto scrollbar-hide items-center">
                     {TIME_CHIPS.map((t) => {
                       const active = timeFilter === t.key;
                       return (
                         <button
                           key={t.key}
                           onClick={() => { onTimeFilterChange(active ? 'anytime' : t.key); setShowDatePicker(false); }}
-                          className="shrink-0 text-[10px] px-2.5 py-1 rounded-full transition-all font-medium flex items-center gap-1"
+                          title={t.label}
+                          className="shrink-0 text-sm w-7 h-7 rounded-full transition-all flex items-center justify-center"
                           style={{
                             background: active ? 'var(--surface-overlay-hover)' : 'var(--surface-overlay)',
-                            color: active ? 'var(--text)' : 'var(--text-faintest)',
                             border: `1px solid ${active ? 'var(--border-hover)' : 'transparent'}`,
                           }}
                         >
-                          <span className="text-xs">{t.emoji}</span>
-                          {t.label}
+                          {t.emoji}
                         </button>
                       );
                     })}
                     <button
                       onClick={() => setShowDatePicker(!showDatePicker)}
-                      className="shrink-0 text-[10px] px-2.5 py-1 rounded-full transition-all font-medium flex items-center gap-1"
+                      title={dateRange ? `${dateRange.from}${dateRange.to && dateRange.to !== dateRange.from ? ` → ${dateRange.to}` : ''}` : 'Pick dates'}
+                      className="shrink-0 text-sm w-7 h-7 rounded-full transition-all flex items-center justify-center"
                       style={{
                         background: dateRange ? 'var(--surface-overlay-hover)' : 'var(--surface-overlay)',
-                        color: dateRange ? 'var(--text)' : 'var(--text-faintest)',
                         border: `1px solid ${dateRange ? 'var(--border-hover)' : 'transparent'}`,
                       }}
                     >
-                      <span className="text-xs">📅</span>
-                      {dateRange ? `${dateRange.from}${dateRange.to && dateRange.to !== dateRange.from ? ` → ${dateRange.to}` : ''}` : 'Dates'}
+                      📅
                     </button>
+
+                    <div className="w-px h-5 shrink-0" style={{ background: 'var(--border)' }} />
+
+                    <button
+                      onClick={() => onPriceFilterChange(priceFilter === 'free' ? 'all' : 'free')}
+                      title="Free events only"
+                      className="shrink-0 text-sm w-7 h-7 rounded-full transition-all flex items-center justify-center"
+                      style={{
+                        background: priceFilter === 'free' ? 'rgba(52,211,153,0.2)' : 'var(--surface-overlay)',
+                        border: `1px solid ${priceFilter === 'free' ? 'rgba(52,211,153,0.35)' : 'transparent'}`,
+                      }}
+                    >
+                      🆓
+                    </button>
+
+                    {CATEGORY_CHIPS.map((chip) => {
+                      const active = categories.has(chip.key);
+                      return (
+                        <button
+                          key={chip.key}
+                          onClick={() => onToggleCategory(chip.key)}
+                          title={chip.label}
+                          className="shrink-0 text-sm w-7 h-7 rounded-full transition-all flex items-center justify-center"
+                          style={{
+                            background: active ? `${chip.color}25` : 'var(--surface-overlay)',
+                            border: `1px solid ${active ? `${chip.color}40` : 'transparent'}`,
+                          }}
+                        >
+                          {chip.emoji}
+                        </button>
+                      );
+                    })}
+
+                    {hasActiveFilters && (
+                      <button
+                        onClick={clearAllFilters}
+                        className="shrink-0 text-[10px] px-2 py-1 rounded-full font-medium transition-colors"
+                        style={{ background: 'var(--surface-overlay)', color: 'var(--text-faintest)' }}
+                      >
+                        ✕ Clear
+                      </button>
+                    )}
                   </div>
 
                   {/* Date range picker dropdown */}
@@ -303,49 +343,6 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                     </div>
                   )}
 
-                  {/* Price + Category filters */}
-                  <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide flex-wrap">
-                    <button
-                      onClick={() => onPriceFilterChange(priceFilter === 'free' ? 'all' : 'free')}
-                      className="shrink-0 text-[10px] px-2.5 py-1 rounded-full transition-all font-medium flex items-center gap-1"
-                      style={{
-                        background: priceFilter === 'free' ? 'rgba(52,211,153,0.2)' : 'var(--surface-overlay)',
-                        color: priceFilter === 'free' ? '#34d399' : 'var(--text-faintest)',
-                        border: `1px solid ${priceFilter === 'free' ? 'rgba(52,211,153,0.35)' : 'transparent'}`,
-                      }}
-                    >
-                      <span className="text-xs">🆓</span>Free
-                    </button>
-
-                    {CATEGORY_CHIPS.map((chip) => {
-                      const active = categories.has(chip.key);
-                      return (
-                        <button
-                          key={chip.key}
-                          onClick={() => onToggleCategory(chip.key)}
-                          className="shrink-0 text-[10px] px-2.5 py-1 rounded-full transition-all font-medium flex items-center gap-1"
-                          style={{
-                            background: active ? `${chip.color}25` : 'var(--surface-overlay)',
-                            color: active ? chip.color : 'var(--text-faintest)',
-                            border: `1px solid ${active ? `${chip.color}40` : 'transparent'}`,
-                          }}
-                        >
-                          <span className="text-xs">{chip.emoji}</span>
-                          {chip.label}
-                        </button>
-                      );
-                    })}
-
-                    {hasActiveFilters && (
-                      <button
-                        onClick={clearAllFilters}
-                        className="shrink-0 text-[10px] px-2 py-1 rounded-full font-medium transition-colors"
-                        style={{ background: 'var(--surface-overlay)', color: 'var(--text-faintest)' }}
-                      >
-                        ✕ Clear all
-                      </button>
-                    )}
-                  </div>
                 </div>
               )}
             </div>
@@ -375,7 +372,7 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                   {/* Promoted events — sticky at top */}
                   {sortedEvents.some((e) => e.promoted) && (
                     <div
-                      className="sticky top-0 z-10 pb-2 -mx-3 px-3 pt-1"
+                      className="sticky top-0 z-20 pb-2 -mx-3 px-3 pt-1 backdrop-blur-sm"
                       style={{ background: 'var(--panel-bg-solid)' }}
                     >
                       <div className="text-[9px] font-bold uppercase tracking-wider mb-1.5 flex items-center gap-1" style={{ color: '#fbbf24' }}>
