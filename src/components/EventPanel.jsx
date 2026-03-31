@@ -28,6 +28,10 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [search, setSearch] = useState('');
   const [filtersExpanded, setFiltersExpanded] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(20);
+  const [scrolledDown, setScrolledDown] = useState(false);
+  const listRef = useRef(null);
+  const sentinelRef = useRef(null);
 
   // Build active filter summary
   const activeFilters = [];
@@ -50,8 +54,33 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
     onDateRangeChange(null);
   };
 
+  // Reset visible count when filters/search change
+  useEffect(() => {
+    setVisibleCount(20);
+  }, [q, priceFilter, categories, timeFilter, dateRange]);
+
+  // IntersectionObserver to load more events when sentinel is visible
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setVisibleCount((c) => c + 20); },
+      { rootMargin: '200px' }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, []);
+
+  // Track scroll position for jump-to-top button
+  const handleScroll = (e) => {
+    setScrolledDown(e.target.scrollTop > 300);
+  };
+
+  const scrollToTop = () => {
+    listRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // Scroll selected card into view — only when panel is visible
-  // Scroll to selected card in the panel — delayed to avoid interfering with click interactions
   useEffect(() => {
     if (!selectedEvent || collapsed) return;
     const timer = setTimeout(() => {
@@ -93,6 +122,15 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
 
   const filteredPast = pastEvents.filter(matchesSearch);
 
+  // Expand visible count if selected event is beyond current slice
+  const selectedIdx = selectedEvent ? sortedEvents.findIndex((e) => e.id === selectedEvent.id) : -1;
+  if (selectedIdx >= visibleCount) {
+    // Use a microtask to avoid setState during render warning
+    Promise.resolve().then(() => setVisibleCount(selectedIdx + 5));
+  }
+
+  const displayEvents = mobile ? sortedEvents.slice(0, visibleCount) : sortedEvents;
+  const hasMore = mobile && visibleCount < sortedEvents.length;
 
   return (
     <div
@@ -349,7 +387,7 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
 
             <div className="h-px mx-4" style={{ background: 'var(--border)' }} />
 
-            <div className="flex-1 overflow-y-auto px-3 py-3" data-eventlist>
+            <div ref={listRef} className="flex-1 overflow-y-auto px-3 py-3 relative" data-eventlist onScroll={mobile ? handleScroll : undefined}>
               {isFallback && !loading && (
                 <div className="mb-3 px-3 py-2 rounded-lg text-[10px] font-medium text-center" style={{ background: 'rgba(251,191,36,0.1)', color: '#fbbf24' }}>
                   Demo mode — showing sample events. Live data temporarily unavailable.
@@ -397,9 +435,9 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                     </div>
                   )}
 
-                  {/* Events list — on mobile includes promoted inline, on desktop only non-promoted */}
+                  {/* Events list — on mobile includes promoted inline + incremental loading */}
                   <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-2">
-                    {(mobile ? sortedEvents : sortedEvents.filter((e) => !e.promoted)).map((event) => (
+                    {(mobile ? displayEvents : sortedEvents.filter((e) => !e.promoted)).map((event) => (
                       <EventCard
                         key={event.id}
                         ref={(el) => { cardRefs.current[event.id] = el; }}
@@ -413,6 +451,20 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                       />
                     ))}
                   </div>
+
+                  {/* Sentinel for loading more + count */}
+                  {mobile && (
+                    <>
+                      <div ref={sentinelRef} className="h-1" />
+                      {hasMore && (
+                        <div className="text-center py-3">
+                          <span className="text-[10px] font-medium" style={{ color: 'var(--text-faintest)' }}>
+                            Showing {displayEvents.length} of {sortedEvents.length}
+                          </span>
+                        </div>
+                      )}
+                    </>
+                  )}
 
                   {filteredPast.length > 0 && (
                     <div className="mt-4">
@@ -457,6 +509,22 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                     </p>
                   </div>
                 </>
+              )}
+
+              {/* Jump to top — mobile only */}
+              {mobile && scrolledDown && (
+                <button
+                  onClick={scrollToTop}
+                  className="sticky bottom-3 left-1/2 -translate-x-1/2 z-30 text-[10px] font-bold px-3 py-1.5 rounded-full transition-opacity"
+                  style={{
+                    background: 'var(--panel-bg-solid)',
+                    color: 'var(--text-faint)',
+                    border: '1px solid var(--border-hover)',
+                    boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
+                  }}
+                >
+                  ↑ Top
+                </button>
               )}
             </div>
 
