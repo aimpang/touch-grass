@@ -1,8 +1,8 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, lazy, Suspense } from 'react';
 import { useGeolocation } from './hooks/useGeolocation';
 import { useEvents } from './hooks/useEvents';
 import { addLocalEvent } from './services/localEvents';
-import EventMap from './components/Map';
+const EventMap = lazy(() => import('./components/Map'));
 import EventPanel from './components/EventPanel';
 import AddEventForm from './components/AddEventForm';
 import AboutModal from './components/AboutModal';
@@ -184,21 +184,23 @@ export default function App() {
         /* ── MOBILE LAYOUT ── */
         <>
           {/* Map fills the screen */}
-          <EventMap
-            location={location}
-            homeLocation={homeLocation}
-            events={events}
-            radiusKm={radius}
-            highlightedEvent={highlightedEvent}
-            selectedEvent={selectedEvent}
-            onSelectEvent={setSelectedEvent}
-            pinnedIds={pinnedIds}
-            onTogglePin={togglePin}
-            panelCollapsed={false}
-            onAbout={() => setShowAbout(true)}
-            lastSelectTime={lastSelectTime}
-            mobile
-          />
+          <Suspense fallback={<div className="h-full w-full" style={{ background: 'var(--bg)' }} />}>
+            <EventMap
+              location={location}
+              homeLocation={homeLocation}
+              events={events}
+              radiusKm={radius}
+              highlightedEvent={highlightedEvent}
+              selectedEvent={selectedEvent}
+              onSelectEvent={setSelectedEvent}
+              pinnedIds={pinnedIds}
+              onTogglePin={togglePin}
+              panelCollapsed={false}
+              onAbout={() => setShowAbout(true)}
+              lastSelectTime={lastSelectTime}
+              mobile
+            />
+          </Suspense>
 
           {/* Bottom sheet — GPU-accelerated with transform instead of height */}
           <div
@@ -244,19 +246,21 @@ export default function App() {
             onToggle={() => setPanelCollapsed(!panelCollapsed)}
           />
           <div className="flex-1 relative min-w-0">
-            <EventMap
-              location={location}
-              homeLocation={homeLocation}
-              events={events}
-              radiusKm={radius}
-              highlightedEvent={highlightedEvent}
-              selectedEvent={selectedEvent}
-              onSelectEvent={setSelectedEvent}
-              pinnedIds={pinnedIds}
-              onTogglePin={togglePin}
-              panelCollapsed={panelCollapsed}
-              onAbout={() => setShowAbout(true)}
-            />
+            <Suspense fallback={<div className="h-full w-full" style={{ background: 'var(--bg)' }} />}>
+              <EventMap
+                location={location}
+                homeLocation={homeLocation}
+                events={events}
+                radiusKm={radius}
+                highlightedEvent={highlightedEvent}
+                selectedEvent={selectedEvent}
+                onSelectEvent={setSelectedEvent}
+                pinnedIds={pinnedIds}
+                onTogglePin={togglePin}
+                panelCollapsed={panelCollapsed}
+                onAbout={() => setShowAbout(true)}
+              />
+            </Suspense>
           </div>
         </div>
       )}

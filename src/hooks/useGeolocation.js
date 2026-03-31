@@ -4,11 +4,27 @@ import { getIPLocation } from './useIPLocation';
 // Last resort fallback — center of continental US
 const FALLBACK_LOCATION = { lat: 39.8283, lng: -98.5795 };
 
+const CACHE_KEY = 'tg_last_location';
+
+function getCachedLocation() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(CACHE_KEY));
+    if (cached?.lat && cached?.lng) return cached;
+  } catch {}
+  return null;
+}
+
+function cacheLocation(lat, lng, city) {
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify({ lat, lng, city })); } catch {}
+}
+
 export function useGeolocation() {
-  const [location, setLocation] = useState(null);
-  const [city, setCity] = useState(null);
+  // Start with cached location so the map can render immediately
+  const cached = getCachedLocation();
+  const [location, setLocation] = useState(cached || FALLBACK_LOCATION);
+  const [city, setCity] = useState(cached?.city || null);
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!cached);
   const [isTeleported, setIsTeleported] = useState(false);
   const homeLocation = useRef(null);
   const homeCity = useRef(null);
@@ -47,9 +63,10 @@ export function useGeolocation() {
           .then((r) => r.json())
           .then((data) => {
             const name = data.address?.city || data.address?.town || data.address?.village || data.address?.municipality;
-            if (name) { setCity(name); homeCity.current = name; }
+            if (name) { setCity(name); homeCity.current = name; cacheLocation(lat, lng, name); }
+            else { cacheLocation(lat, lng, null); }
           })
-          .catch(() => {});
+          .catch(() => { cacheLocation(lat, lng, null); });
       },
       () => {
         fallbackToIP();

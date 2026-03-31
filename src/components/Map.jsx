@@ -392,7 +392,7 @@ export default function EventMap({ location, homeLocation: homeLoc, events, radi
         attribution='&copy; <a href="https://carto.com/">CARTO</a>'
         updateWhenZooming={false}
         updateWhenIdle={true}
-        keepBuffer={4}
+        keepBuffer={2}
       />
 
       <FlyToHandler
