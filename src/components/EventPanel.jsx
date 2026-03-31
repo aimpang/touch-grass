@@ -372,7 +372,7 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                   {/* Promoted events — sticky at top */}
                   {sortedEvents.some((e) => e.promoted) && (
                     <div
-                      className="sticky top-0 z-20 pb-2 -mx-3 px-3 pt-1 backdrop-blur-sm"
+                      className="sticky -top-3 z-20 pb-2 -mx-3 px-3 pt-4"
                       style={{ background: 'var(--panel-bg-solid)' }}
                     >
                       <div className="text-[9px] font-bold uppercase tracking-wider mb-1.5 flex items-center gap-1" style={{ color: '#fbbf24' }}>
