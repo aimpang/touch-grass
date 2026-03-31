@@ -160,7 +160,10 @@ export default function App() {
     dateRange,
     onDateRangeChange: (r) => { setDateRange(r); setTimeFilter(r ? 'custom' : 'anytime'); },
     onEventHover: isMobile ? null : setHighlightedEvent,
-    onEventClick: setSelectedEvent,
+    onEventClick: (event) => {
+      setSelectedEvent(event);
+      if (isMobile && event) setSheetExpanded(false);
+    },
     selectedEvent,
     pinnedIds,
     onTogglePin: togglePin,

@@ -27,6 +27,28 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
   const [showPast, setShowPast] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [search, setSearch] = useState('');
+  const [filtersExpanded, setFiltersExpanded] = useState(false);
+
+  // Build active filter summary
+  const activeFilters = [];
+  if (priceFilter === 'free') activeFilters.push({ label: 'Free', emoji: '🆓', key: 'price' });
+  if (timeFilter !== 'anytime') {
+    const tc = TIME_CHIPS.find((t) => t.key === timeFilter);
+    if (tc) activeFilters.push({ label: tc.label, emoji: tc.emoji, key: `time-${tc.key}` });
+  }
+  if (dateRange?.from) activeFilters.push({ label: dateRange.to && dateRange.to !== dateRange.from ? `${dateRange.from} → ${dateRange.to}` : dateRange.from, emoji: '📅', key: 'daterange' });
+  for (const cat of categories) {
+    const cc = CATEGORY_CHIPS.find((c) => c.key === cat);
+    if (cc) activeFilters.push({ label: cc.label, emoji: cc.emoji, key: `cat-${cat}` });
+  }
+  const hasActiveFilters = activeFilters.length > 0;
+
+  const clearAllFilters = () => {
+    onPriceFilterChange('all');
+    onClearCategories();
+    onTimeFilterChange('anytime');
+    onDateRangeChange(null);
+  };
 
   // Scroll selected card into view — only when panel is visible
   // Scroll to selected card in the panel — delayed to avoid interfering with click interactions
@@ -167,11 +189,11 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                 </div>
               </div>
 
+              {/* Search + Radius — always visible */}
               <div className="mb-3">
                 <RadiusSlider value={radius} onChange={onRadiusChange} />
               </div>
 
-              {/* Search */}
               <div className="relative mb-3">
                 <input
                   type="text"
@@ -192,118 +214,140 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                 )}
               </div>
 
-              {/* Time filter chips */}
-              <div className="flex gap-1.5 mb-2 overflow-x-auto scrollbar-hide">
-                {TIME_CHIPS.map((t) => {
-                  const active = timeFilter === t.key;
-                  return (
-                    <button
-                      key={t.key}
-                      onClick={() => { onTimeFilterChange(active ? 'anytime' : t.key); setShowDatePicker(false); }}
-                      className="shrink-0 text-[10px] px-2.5 py-1 rounded-full transition-all font-medium flex items-center gap-1"
-                      style={{
-                        background: active ? 'var(--surface-overlay-hover)' : 'var(--surface-overlay)',
-                        color: active ? 'var(--text)' : 'var(--text-faintest)',
-                        border: `1px solid ${active ? 'var(--border-hover)' : 'transparent'}`,
-                      }}
-                    >
-                      <span className="text-xs">{t.emoji}</span>
-                      {t.label}
-                    </button>
-                  );
-                })}
+              {/* Mobile: collapsible filter toggle */}
+              {mobile && (
                 <button
-                  onClick={() => setShowDatePicker(!showDatePicker)}
-                  className="shrink-0 text-[10px] px-2.5 py-1 rounded-full transition-all font-medium flex items-center gap-1"
-                  style={{
-                    background: dateRange ? 'var(--surface-overlay-hover)' : 'var(--surface-overlay)',
-                    color: dateRange ? 'var(--text)' : 'var(--text-faintest)',
-                    border: `1px solid ${dateRange ? 'var(--border-hover)' : 'transparent'}`,
-                  }}
+                  onClick={() => setFiltersExpanded(!filtersExpanded)}
+                  className="w-full flex items-center justify-between text-[10px] font-medium px-2.5 py-1.5 rounded-lg mb-2 transition-colors"
+                  style={{ background: 'var(--surface-overlay)', color: 'var(--text-faint)' }}
                 >
-                  <span className="text-xs">📅</span>
-                  {dateRange ? `${dateRange.from}${dateRange.to && dateRange.to !== dateRange.from ? ` → ${dateRange.to}` : ''}` : 'Dates'}
+                  <span className="flex items-center gap-1.5">
+                    <span>🎛</span>
+                    Filters
+                    {hasActiveFilters && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full font-bold" style={{ background: 'rgba(52,211,153,0.2)', color: '#34d399' }}>
+                        {activeFilters.length}
+                      </span>
+                    )}
+                  </span>
+                  <span style={{ transform: filtersExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>▾</span>
                 </button>
-              </div>
-
-              {/* Date range picker dropdown */}
-              {showDatePicker && (
-                <div className="mb-2 p-2.5 rounded-xl flex items-center gap-2 flex-wrap" style={{ background: 'var(--surface-overlay)', border: '1px solid var(--border)' }}>
-                  <input
-                    type="date"
-                    value={dateRange?.from || ''}
-                    onChange={(e) => onDateRangeChange(e.target.value ? { from: e.target.value, to: dateRange?.to || '' } : null)}
-                    className="text-[11px] rounded-lg px-2 py-1 appearance-none"
-                    style={{ background: 'var(--surface-overlay)', border: '1px solid var(--border)', color: 'var(--text)' }}
-                    min={new Date().toISOString().slice(0, 10)}
-                  />
-                  <span className="text-[10px]" style={{ color: 'var(--text-faintest)' }}>to</span>
-                  <input
-                    type="date"
-                    value={dateRange?.to || ''}
-                    onChange={(e) => onDateRangeChange({ from: dateRange?.from || new Date().toISOString().slice(0, 10), to: e.target.value })}
-                    className="text-[11px] rounded-lg px-2 py-1 appearance-none"
-                    style={{ background: 'var(--surface-overlay)', border: '1px solid var(--border)', color: 'var(--text)' }}
-                    min={dateRange?.from || new Date().toISOString().slice(0, 10)}
-                  />
-                  {dateRange && (
-                    <button
-                      onClick={() => { onDateRangeChange(null); setShowDatePicker(false); }}
-                      className="text-[10px] px-2 py-1 rounded-lg font-medium"
-                      style={{ background: 'var(--surface-overlay-hover)', color: 'var(--text-faint)' }}
-                    >
-                      Clear
-                    </button>
-                  )}
-                </div>
               )}
 
-              {/* Price + Category filters — multi-select */}
-              <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide flex-wrap">
-                {/* Price filter */}
-                <button
-                  onClick={() => onPriceFilterChange(priceFilter === 'free' ? 'all' : 'free')}
-                  className="shrink-0 text-[10px] px-2.5 py-1 rounded-full transition-all font-medium flex items-center gap-1"
-                  style={{
-                    background: priceFilter === 'free' ? 'rgba(52,211,153,0.2)' : 'var(--surface-overlay)',
-                    color: priceFilter === 'free' ? '#34d399' : 'var(--text-faintest)',
-                    border: `1px solid ${priceFilter === 'free' ? 'rgba(52,211,153,0.35)' : 'transparent'}`,
-                  }}
-                >
-                  <span className="text-xs">🆓</span>Free
-                </button>
-
-                {/* Category chips — multi-select */}
-                {CATEGORY_CHIPS.map((chip) => {
-                  const active = categories.has(chip.key);
-                  return (
+              {/* Filter chips — always visible on desktop, collapsible on mobile */}
+              {(!mobile || filtersExpanded) && (
+                <div style={mobile ? { animation: 'filterSlideIn 0.2s ease-out' } : undefined}>
+                  {/* Time filter chips */}
+                  <div className="flex gap-1.5 mb-2 overflow-x-auto scrollbar-hide">
+                    {TIME_CHIPS.map((t) => {
+                      const active = timeFilter === t.key;
+                      return (
+                        <button
+                          key={t.key}
+                          onClick={() => { onTimeFilterChange(active ? 'anytime' : t.key); setShowDatePicker(false); }}
+                          className="shrink-0 text-[10px] px-2.5 py-1 rounded-full transition-all font-medium flex items-center gap-1"
+                          style={{
+                            background: active ? 'var(--surface-overlay-hover)' : 'var(--surface-overlay)',
+                            color: active ? 'var(--text)' : 'var(--text-faintest)',
+                            border: `1px solid ${active ? 'var(--border-hover)' : 'transparent'}`,
+                          }}
+                        >
+                          <span className="text-xs">{t.emoji}</span>
+                          {t.label}
+                        </button>
+                      );
+                    })}
                     <button
-                      key={chip.key}
-                      onClick={() => onToggleCategory(chip.key)}
+                      onClick={() => setShowDatePicker(!showDatePicker)}
                       className="shrink-0 text-[10px] px-2.5 py-1 rounded-full transition-all font-medium flex items-center gap-1"
                       style={{
-                        background: active ? `${chip.color}25` : 'var(--surface-overlay)',
-                        color: active ? chip.color : 'var(--text-faintest)',
-                        border: `1px solid ${active ? `${chip.color}40` : 'transparent'}`,
+                        background: dateRange ? 'var(--surface-overlay-hover)' : 'var(--surface-overlay)',
+                        color: dateRange ? 'var(--text)' : 'var(--text-faintest)',
+                        border: `1px solid ${dateRange ? 'var(--border-hover)' : 'transparent'}`,
                       }}
                     >
-                      <span className="text-xs">{chip.emoji}</span>
-                      {chip.label}
+                      <span className="text-xs">📅</span>
+                      {dateRange ? `${dateRange.from}${dateRange.to && dateRange.to !== dateRange.from ? ` → ${dateRange.to}` : ''}` : 'Dates'}
                     </button>
-                  );
-                })}
+                  </div>
 
-                {/* Clear all filters */}
-                {(priceFilter !== 'all' || categories.size > 0) && (
-                  <button
-                    onClick={() => { onPriceFilterChange('all'); onClearCategories(); }}
-                    className="shrink-0 text-[10px] px-2 py-1 rounded-full font-medium"
-                    style={{ background: 'var(--surface-overlay)', color: 'var(--text-faintest)' }}
-                  >
-                    ✕ Clear
-                  </button>
-                )}
-              </div>
+                  {/* Date range picker dropdown */}
+                  {showDatePicker && (
+                    <div className="mb-2 p-2.5 rounded-xl flex items-center gap-2 flex-wrap" style={{ background: 'var(--surface-overlay)', border: '1px solid var(--border)' }}>
+                      <input
+                        type="date"
+                        value={dateRange?.from || ''}
+                        onChange={(e) => onDateRangeChange(e.target.value ? { from: e.target.value, to: dateRange?.to || '' } : null)}
+                        className="text-[11px] rounded-lg px-2 py-1 appearance-none"
+                        style={{ background: 'var(--surface-overlay)', border: '1px solid var(--border)', color: 'var(--text)' }}
+                        min={new Date().toISOString().slice(0, 10)}
+                      />
+                      <span className="text-[10px]" style={{ color: 'var(--text-faintest)' }}>to</span>
+                      <input
+                        type="date"
+                        value={dateRange?.to || ''}
+                        onChange={(e) => onDateRangeChange({ from: dateRange?.from || new Date().toISOString().slice(0, 10), to: e.target.value })}
+                        className="text-[11px] rounded-lg px-2 py-1 appearance-none"
+                        style={{ background: 'var(--surface-overlay)', border: '1px solid var(--border)', color: 'var(--text)' }}
+                        min={dateRange?.from || new Date().toISOString().slice(0, 10)}
+                      />
+                      {dateRange && (
+                        <button
+                          onClick={() => { onDateRangeChange(null); setShowDatePicker(false); }}
+                          className="text-[10px] px-2 py-1 rounded-lg font-medium"
+                          style={{ background: 'var(--surface-overlay-hover)', color: 'var(--text-faint)' }}
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Price + Category filters */}
+                  <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide flex-wrap">
+                    <button
+                      onClick={() => onPriceFilterChange(priceFilter === 'free' ? 'all' : 'free')}
+                      className="shrink-0 text-[10px] px-2.5 py-1 rounded-full transition-all font-medium flex items-center gap-1"
+                      style={{
+                        background: priceFilter === 'free' ? 'rgba(52,211,153,0.2)' : 'var(--surface-overlay)',
+                        color: priceFilter === 'free' ? '#34d399' : 'var(--text-faintest)',
+                        border: `1px solid ${priceFilter === 'free' ? 'rgba(52,211,153,0.35)' : 'transparent'}`,
+                      }}
+                    >
+                      <span className="text-xs">🆓</span>Free
+                    </button>
+
+                    {CATEGORY_CHIPS.map((chip) => {
+                      const active = categories.has(chip.key);
+                      return (
+                        <button
+                          key={chip.key}
+                          onClick={() => onToggleCategory(chip.key)}
+                          className="shrink-0 text-[10px] px-2.5 py-1 rounded-full transition-all font-medium flex items-center gap-1"
+                          style={{
+                            background: active ? `${chip.color}25` : 'var(--surface-overlay)',
+                            color: active ? chip.color : 'var(--text-faintest)',
+                            border: `1px solid ${active ? `${chip.color}40` : 'transparent'}`,
+                          }}
+                        >
+                          <span className="text-xs">{chip.emoji}</span>
+                          {chip.label}
+                        </button>
+                      );
+                    })}
+
+                    {hasActiveFilters && (
+                      <button
+                        onClick={clearAllFilters}
+                        className="shrink-0 text-[10px] px-2 py-1 rounded-full font-medium transition-colors"
+                        style={{ background: 'var(--surface-overlay)', color: 'var(--text-faintest)' }}
+                      >
+                        ✕ Clear all
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="h-px mx-4" style={{ background: 'var(--border)' }} />

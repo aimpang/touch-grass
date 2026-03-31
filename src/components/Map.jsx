@@ -138,9 +138,20 @@ function FlyToHandler({ center, selectedEvent, lastSelectTime }) {
     if (newId) {
       if (!oldId) prevZoom.current = map.getZoom();
       lastSelectTime.current = Date.now();
-      map.flyTo([selectedEvent.lat, selectedEvent.lng], 16, { duration: 1 });
+      const target = [selectedEvent.lat, selectedEvent.lng];
+
+      if (oldId) {
+        // Switching between events — pan smoothly without the flyTo zoom-out arc
+        map.setView(target, Math.max(map.getZoom(), 14), {
+          animate: true,
+          duration: 0.8,
+        });
+      } else {
+        // First selection — fly in
+        map.flyTo(target, 16, { duration: 1 });
+      }
     } else if (oldId) {
-      map.setZoom(prevZoom.current, { animate: true });
+      // Stay at current zoom — don't snap back
     }
 
     prevSelectedId.current = newId;
