@@ -124,26 +124,22 @@ const userIcon = L.divIcon({
   iconAnchor: [8, 8],
 });
 
-function FlyToHandler({ center, selectedEvent }) {
+function FlyToHandler({ center, selectedEvent, lastSelectTime }) {
   const map = useMap();
   const prevZoom = useRef(map.getZoom());
   const prevSelectedId = useRef(null);
   const prevCenter = useRef(center);
 
-  // Fly to selected event or restore zoom on deselect
   useEffect(() => {
     const newId = selectedEvent?.id || null;
     const oldId = prevSelectedId.current;
+    if (newId === oldId) return;
 
-    if (newId && newId !== oldId) {
-      // New event selected (or switched from another)
-      if (!oldId) {
-        // First selection — save current zoom
-        prevZoom.current = map.getZoom();
-      }
+    if (newId) {
+      if (!oldId) prevZoom.current = map.getZoom();
+      lastSelectTime.current = Date.now();
       map.flyTo([selectedEvent.lat, selectedEvent.lng], 16, { duration: 1 });
-    } else if (!newId && oldId) {
-      // Deselected — stay in place, just restore zoom
+    } else if (oldId) {
       map.setZoom(prevZoom.current, { animate: true });
     }
 
@@ -164,12 +160,14 @@ function FlyToHandler({ center, selectedEvent }) {
   return null;
 }
 
-function MapClickHandler({ onSelectEvent }) {
+function MapClickHandler({ onSelectEvent, lastSelectTime }) {
   const map = useMap();
   useEffect(() => {
     const handler = (e) => {
       // Don't deselect if click originated inside the info card
       if (e.originalEvent?.target?.closest?.('[data-infocard]')) return;
+      // Don't deselect if a selection just happened (prevents scroll-triggered false clicks)
+      if (lastSelectTime.current && Date.now() - lastSelectTime.current < 500) return;
       onSelectEvent?.(null);
     };
     map.on('click', handler);
@@ -328,6 +326,7 @@ function VisibleMarkers({ events, highlightedEvent, selectedEvent, onSelectEvent
 
 
 export default function EventMap({ location, homeLocation: homeLoc, events, radiusKm, highlightedEvent, selectedEvent, onSelectEvent, panelCollapsed, onAbout, mobile }) {
+  const lastSelectTimeRef = useRef(0);
   const { theme } = useTheme();
   if (!location) return null;
 
@@ -354,12 +353,13 @@ export default function EventMap({ location, homeLocation: homeLoc, events, radi
       <FlyToHandler
         center={center}
         selectedEvent={selectedEvent}
+        lastSelectTime={lastSelectTimeRef}
       />
 
       <MapResizer panelCollapsed={panelCollapsed} />
       <MapControls userCenter={center} homeCenter={homeLoc ? [homeLoc.lat, homeLoc.lng] : null} />
       <AboutButton onAbout={onAbout} mobile={mobile} />
-      <MapClickHandler onSelectEvent={onSelectEvent} />
+      <MapClickHandler onSelectEvent={onSelectEvent} lastSelectTime={lastSelectTimeRef} />
 
       {/* User location */}
       <Marker position={center} icon={userIcon} zIndexOffset={2000} />
