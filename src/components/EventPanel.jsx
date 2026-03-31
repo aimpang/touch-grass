@@ -57,7 +57,7 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
   // Reset visible count when filters/search change
   useEffect(() => {
     setVisibleCount(20);
-  }, [q, priceFilter, categories, timeFilter, dateRange]);
+  }, [search, priceFilter, categories, timeFilter, dateRange]);
 
   // IntersectionObserver to load more events when sentinel is visible
   useEffect(() => {
