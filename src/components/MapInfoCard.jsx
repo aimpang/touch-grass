@@ -21,7 +21,7 @@ const CARD_W_DESKTOP = 280;
 const CARD_W_MOBILE = 220;
 const CARD_GAP = 32;
 
-export default function MapInfoCard({ event, onClose }) {
+export default function MapInfoCard({ event, onClose, pinned, onTogglePin }) {
   const map = useMap();
   const [pos, setPos] = useState(null);
   const [side, setSide] = useState('right');
@@ -207,19 +207,36 @@ export default function MapInfoCard({ event, onClose }) {
                 )}
               </div>
             </div>
-            <button
-              onClick={onClose}
-              style={{
-                width: 22, height: 22, borderRadius: 6, border: 'none',
-                background: 'rgba(255,255,255,0.06)', color: 'var(--text-faintest)',
-                cursor: 'pointer', fontSize: 10, display: 'flex',
-                alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-              }}
-              onMouseEnter={(e) => { e.target.style.color = '#fff'; e.target.style.background = 'rgba(255,255,255,0.1)'; }}
-              onMouseLeave={(e) => { e.target.style.color = '#666'; e.target.style.background = 'rgba(255,255,255,0.06)'; }}
-            >
-              ✕
-            </button>
+            <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
+              {onTogglePin && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); onTogglePin(event.id); }}
+                  title={pinned ? 'Unpin event' : 'Pin event'}
+                  style={{
+                    width: 22, height: 22, borderRadius: 6, border: 'none',
+                    background: pinned ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.06)',
+                    color: pinned ? '#60a5fa' : 'var(--text-faintest)',
+                    cursor: 'pointer', fontSize: 11, display: 'flex',
+                    alignItems: 'center', justifyContent: 'center',
+                  }}
+                >
+                  📌
+                </button>
+              )}
+              <button
+                onClick={onClose}
+                style={{
+                  width: 22, height: 22, borderRadius: 6, border: 'none',
+                  background: 'rgba(255,255,255,0.06)', color: 'var(--text-faintest)',
+                  cursor: 'pointer', fontSize: 10, display: 'flex',
+                  alignItems: 'center', justifyContent: 'center',
+                }}
+                onMouseEnter={(e) => { e.target.style.color = '#fff'; e.target.style.background = 'rgba(255,255,255,0.1)'; }}
+                onMouseLeave={(e) => { e.target.style.color = '#666'; e.target.style.background = 'rgba(255,255,255,0.06)'; }}
+              >
+                ✕
+              </button>
+            </div>
           </div>
         </div>
 

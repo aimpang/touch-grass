@@ -190,6 +190,8 @@ export default function App() {
             highlightedEvent={highlightedEvent}
             selectedEvent={selectedEvent}
             onSelectEvent={setSelectedEvent}
+            pinnedIds={pinnedIds}
+            onTogglePin={togglePin}
             panelCollapsed={false}
             onAbout={() => setShowAbout(true)}
             mobile
@@ -247,6 +249,8 @@ export default function App() {
               highlightedEvent={highlightedEvent}
               selectedEvent={selectedEvent}
               onSelectEvent={setSelectedEvent}
+              pinnedIds={pinnedIds}
+              onTogglePin={togglePin}
               panelCollapsed={panelCollapsed}
               onAbout={() => setShowAbout(true)}
             />
