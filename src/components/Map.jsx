@@ -127,23 +127,28 @@ const userIcon = L.divIcon({
 function FlyToHandler({ center, selectedEvent }) {
   const map = useMap();
   const prevZoom = useRef(map.getZoom());
-  const wasSelected = useRef(false);
+  const prevSelectedId = useRef(null);
   const prevCenter = useRef(center);
 
-  // Fly to selected event — on deselect, just restore zoom without moving
+  // Fly to selected event or restore zoom on deselect
   useEffect(() => {
-    if (selectedEvent) {
-      if (!wasSelected.current) {
+    const newId = selectedEvent?.id || null;
+    const oldId = prevSelectedId.current;
+
+    if (newId && newId !== oldId) {
+      // New event selected (or switched from another)
+      if (!oldId) {
+        // First selection — save current zoom
         prevZoom.current = map.getZoom();
       }
-      wasSelected.current = true;
       map.flyTo([selectedEvent.lat, selectedEvent.lng], 16, { duration: 1 });
-    } else if (wasSelected.current) {
-      wasSelected.current = false;
-      // Stay where we are, just ease back to the previous zoom level
+    } else if (!newId && oldId) {
+      // Deselected — stay in place, just restore zoom
       map.setZoom(prevZoom.current, { animate: true });
     }
-  }, [selectedEvent, map]);
+
+    prevSelectedId.current = newId;
+  });
 
   // Fly to new center when location changes (teleport / go home)
   useEffect(() => {
