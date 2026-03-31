@@ -195,12 +195,13 @@ export default function App() {
             mobile
           />
 
-          {/* Bottom sheet */}
+          {/* Bottom sheet — GPU-accelerated with transform instead of height */}
           <div
-            className="absolute bottom-0 left-0 right-0 z-[1100] flex flex-col will-change-[height]"
+            className="absolute bottom-0 left-0 right-0 z-[1100] flex flex-col will-change-transform"
             style={{
-              height: sheetExpanded ? '75vh' : 48,
-              transition: 'height 0.25s ease-out',
+              height: '75vh',
+              transform: sheetExpanded ? 'translateY(0)' : `translateY(calc(100% - 48px))`,
+              transition: 'transform 0.25s ease-out',
               background: 'var(--panel-bg-solid)',
               borderTop: '1px solid var(--border)',
               borderRadius: '14px 14px 0 0',
@@ -280,7 +281,6 @@ export default function App() {
             });
           }}
         />
-      )}
 
       {showAddForm && (
         <AddEventForm

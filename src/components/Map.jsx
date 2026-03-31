@@ -124,7 +124,7 @@ const userIcon = L.divIcon({
   iconAnchor: [8, 8],
 });
 
-function FlyToHandler({ center, selectedEvent, lastSelectTime }) {
+function FlyToHandler({ center, selectedEvent, lastSelectTime, mobile }) {
   const map = useMap();
   const prevZoom = useRef(map.getZoom());
   const prevSelectedId = useRef(null);
@@ -139,23 +139,27 @@ function FlyToHandler({ center, selectedEvent, lastSelectTime }) {
       if (!oldId) prevZoom.current = map.getZoom();
       lastSelectTime.current = Date.now();
       const target = [selectedEvent.lat, selectedEvent.lng];
+      const zoom = oldId ? Math.max(map.getZoom(), 14) : 16;
 
-      if (oldId) {
-        // Switching between events — pan smoothly without the flyTo zoom-out arc
-        map.setView(target, Math.max(map.getZoom(), 14), {
-          animate: true,
-          duration: 0.8,
-        });
+      if (mobile) {
+        // On mobile, offset the blob to the left so the info card has room on the right
+        const targetPoint = map.project(target, zoom);
+        const mapW = map.getSize().x;
+        // Place blob at ~30% from left edge
+        const offsetX = mapW * 0.2;
+        const offsetCenter = map.unproject(targetPoint.add([offsetX, 0]), zoom);
+        map.setView(offsetCenter, zoom, { animate: true, duration: oldId ? 0.8 : 1 });
+      } else if (oldId) {
+        map.setView(target, zoom, { animate: true, duration: 0.8 });
       } else {
-        // First selection — fly in
-        map.flyTo(target, 16, { duration: 1 });
+        map.flyTo(target, zoom, { duration: 1 });
       }
     } else if (oldId) {
       // Stay at current zoom — don't snap back
     }
 
     prevSelectedId.current = newId;
-  }, [selectedEvent, map, lastSelectTime]);
+  }, [selectedEvent, map, lastSelectTime, mobile]);
 
   // Fly to new center when location changes (teleport / go home)
   useEffect(() => {
@@ -348,6 +352,23 @@ const circlePathOptions = {
   opacity: 0.3,
 };
 
+// Hide info card during active zoom to avoid expensive repositioning
+function ZoomAwareInfoCard({ selectedEvent, onSelectEvent }) {
+  const map = useMap();
+  const [zooming, setZooming] = React.useState(false);
+
+  useEffect(() => {
+    const onStart = () => setZooming(true);
+    const onEnd = () => setZooming(false);
+    map.on('zoomstart', onStart);
+    map.on('zoomend', onEnd);
+    return () => { map.off('zoomstart', onStart); map.off('zoomend', onEnd); };
+  }, [map]);
+
+  if (!selectedEvent || zooming) return null;
+  return <MapInfoCard event={selectedEvent} onClose={() => onSelectEvent?.(null)} />;
+}
+
 export default function EventMap({ location, homeLocation: homeLoc, events, radiusKm, highlightedEvent, selectedEvent, onSelectEvent, panelCollapsed, onAbout, mobile }) {
   const lastSelectTimeRef = useRef(0);
   const { theme } = useTheme();
@@ -377,6 +398,7 @@ export default function EventMap({ location, homeLocation: homeLoc, events, radi
         center={center}
         selectedEvent={selectedEvent}
         lastSelectTime={lastSelectTimeRef}
+        mobile={mobile}
       />
 
       <MapResizer panelCollapsed={panelCollapsed} />
@@ -402,9 +424,7 @@ export default function EventMap({ location, homeLocation: homeLoc, events, radi
         onSelectEvent={onSelectEvent}
       />
 
-      {selectedEvent && (
-        <MapInfoCard event={selectedEvent} onClose={() => onSelectEvent?.(null)} />
-      )}
+      <ZoomAwareInfoCard selectedEvent={selectedEvent} onSelectEvent={onSelectEvent} />
     </MapContainer>
   );
 }
