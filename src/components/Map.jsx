@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapContainer, TileLayer, Marker, Circle, CircleMarker, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Circle, useMap } from 'react-leaflet';
 import { createPortal } from 'react-dom';
 import L from 'leaflet';
 import { useEffect, useRef, useMemo, useCallback } from 'react';
@@ -174,6 +174,53 @@ function FlyToHandler({ center, selectedEvent, lastSelectTime, mobile }) {
   return null;
 }
 
+// Hide markers + overlays during pinch gesture for smooth zoom on mobile
+function PinchPerformance() {
+  const map = useMap();
+  useEffect(() => {
+    const container = map.getContainer();
+    let hidden = false;
+    const panes = ['markerPane', 'overlayPane', 'shadowPane'];
+
+    function hide() {
+      if (hidden) return;
+      hidden = true;
+      for (const name of panes) {
+        const pane = map.getPane(name);
+        if (pane) pane.style.visibility = 'hidden';
+      }
+    }
+    function show() {
+      if (!hidden) return;
+      hidden = false;
+      for (const name of panes) {
+        const pane = map.getPane(name);
+        if (pane) pane.style.visibility = '';
+      }
+    }
+
+    function onTouch(e) {
+      if (e.touches.length >= 2) hide();
+    }
+    function onTouchEnd(e) {
+      if (e.touches.length < 2) show();
+    }
+
+    container.addEventListener('touchstart', onTouch, { passive: true });
+    container.addEventListener('touchmove', onTouch, { passive: true });
+    container.addEventListener('touchend', onTouchEnd, { passive: true });
+    container.addEventListener('touchcancel', onTouchEnd, { passive: true });
+    return () => {
+      container.removeEventListener('touchstart', onTouch);
+      container.removeEventListener('touchmove', onTouch);
+      container.removeEventListener('touchend', onTouchEnd);
+      container.removeEventListener('touchcancel', onTouchEnd);
+      show();
+    };
+  }, [map]);
+  return null;
+}
+
 function MapClickHandler({ onSelectEvent, lastSelectTime }) {
   const map = useMap();
   useEffect(() => {
@@ -301,7 +348,7 @@ const TILES = {
   light: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
 };
 
-// Canvas-rendered markers for performance — DOM divIcon only for active markers
+// Only renders markers within the current viewport + a buffer
 const VisibleMarkers = React.memo(function VisibleMarkers({ events, highlightedEvent, selectedEvent, onSelectEvent }) {
   const map = useMap();
   const [bounds, setBounds] = React.useState(null);
@@ -322,40 +369,19 @@ const VisibleMarkers = React.memo(function VisibleMarkers({ events, highlightedE
     const isSelected = selectedEvent?.id === event.id;
     const isHighlighted = highlightedEvent?.id === event.id;
     const isSpotlight = event.promotionTier === 'spotlight';
-    const isActive = isSelected || isHighlighted || isSpotlight;
-    const color = CAT[event.category] || DEFAULT_COLOR;
+    const state = isSelected ? 'selected' : isHighlighted ? 'highlighted' : isSpotlight ? 'promoted' : 'default';
 
+    // Stable event handler reference per event id
     if (!handlersRef.current[event.id]) {
       handlersRef.current[event.id] = { click: () => onSelectEvent?.(event) };
     }
 
-    // Active markers use DOM divIcon for rich visuals (only 1-2 at a time)
-    if (isActive) {
-      const state = isSelected ? 'selected' : isHighlighted ? 'highlighted' : 'promoted';
-      return (
-        <Marker
-          key={event.id}
-          position={[event.lat, event.lng]}
-          icon={buildMarkerIcon(event.category, state)}
-          zIndexOffset={isSelected ? 2000 : isHighlighted ? 1000 : 500}
-          eventHandlers={handlersRef.current[event.id]}
-        />
-      );
-    }
-
-    // Regular markers use canvas-rendered CircleMarker — zero DOM overhead
     return (
-      <CircleMarker
+      <Marker
         key={event.id}
-        center={[event.lat, event.lng]}
-        radius={7}
-        pathOptions={{
-          color: color,
-          fillColor: 'rgba(18,18,28,0.85)',
-          fillOpacity: 1,
-          weight: 2,
-          opacity: 0.7,
-        }}
+        position={[event.lat, event.lng]}
+        icon={buildMarkerIcon(event.category, state)}
+        zIndexOffset={isSelected ? 2000 : isHighlighted ? 1000 : isSpotlight ? 500 : 0}
         eventHandlers={handlersRef.current[event.id]}
       />
     );
@@ -422,6 +448,7 @@ export default function EventMap({ location, homeLocation: homeLoc, events, radi
         mobile={mobile}
       />
 
+      <PinchPerformance />
       <MapResizer panelCollapsed={panelCollapsed} />
       <MapControls userCenter={center} homeCenter={homeLoc ? [homeLoc.lat, homeLoc.lng] : null} />
       <AboutButton onAbout={onAbout} mobile={mobile} />
