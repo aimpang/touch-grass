@@ -31,7 +31,6 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
   const [visibleCount, setVisibleCount] = useState(20);
   const [scrolledDown, setScrolledDown] = useState(false);
   const listRef = useRef(null);
-  const sentinelRef = useRef(null);
 
   // Build active filter summary
   const activeFilters = [];
@@ -58,18 +57,6 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
   useEffect(() => {
     setVisibleCount(20);
   }, [search, priceFilter, categories, timeFilter, dateRange]);
-
-  // IntersectionObserver to load more events when sentinel is visible
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setVisibleCount((c) => c + 20); },
-      { rootMargin: '200px' }
-    );
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, []);
 
   // Track scroll position for jump-to-top button
   const handleScroll = (e) => {
@@ -452,18 +439,15 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                     ))}
                   </div>
 
-                  {/* Sentinel for loading more + count */}
-                  {mobile && (
-                    <>
-                      <div ref={sentinelRef} className="h-1" />
-                      {hasMore && (
-                        <div className="text-center py-3">
-                          <span className="text-[10px] font-medium" style={{ color: 'var(--text-faintest)' }}>
-                            Showing {displayEvents.length} of {sortedEvents.length}
-                          </span>
-                        </div>
-                      )}
-                    </>
+                  {/* Show more button */}
+                  {mobile && hasMore && (
+                    <button
+                      onClick={() => setVisibleCount((c) => c + 20)}
+                      className="w-full mt-3 py-2.5 rounded-xl text-[11px] font-semibold transition-colors"
+                      style={{ background: 'var(--surface-overlay)', color: 'var(--text-faint)', border: '1px solid var(--border)' }}
+                    >
+                      Show more ({sortedEvents.length - displayEvents.length} remaining)
+                    </button>
                   )}
 
                   {filteredPast.length > 0 && (
