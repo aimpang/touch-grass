@@ -1,0 +1,16 @@
+{
+  "name": "Touch Grass",
+  "short_name": "TouchGrass",
+  "description": "Discover events happening near you. Stop doomscrolling, go outside.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#111118",
+  "theme_color": "#111118",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

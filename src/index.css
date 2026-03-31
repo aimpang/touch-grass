@@ -1,0 +1,206 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Theme variables */
+:root, [data-theme="dark"] {
+  --bg: #111118;
+  --text: #e5e5e5;
+  --text-muted: #a3a3a3;
+  --text-faint: #737373;
+  --text-faintest: #525252;
+  --panel-bg: rgba(18, 18, 28, 0.95);
+  --panel-bg-solid: #12121c;
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --card-hover: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.06);
+  --border-hover: rgba(255, 255, 255, 0.12);
+  --surface-overlay: rgba(255, 255, 255, 0.04);
+  --surface-overlay-hover: rgba(255, 255, 255, 0.08);
+  --marker-bg: rgba(18, 18, 28, 0.85);
+  --marker-bg-active: rgba(18, 18, 28, 0.92);
+  --infocard-bg: rgba(18, 18, 28, 0.92);
+  --scrollbar: #3a3a4a;
+  --map-filter: none;
+}
+
+[data-theme="light"] {
+  --bg: #eeeee8;
+  --text: #2a2a2a;
+  --text-muted: #555;
+  --text-faint: #777;
+  --text-faintest: #999;
+  --panel-bg: rgba(240, 238, 232, 0.95);
+  --panel-bg-solid: #f0eee8;
+  --card-bg: rgba(0, 0, 0, 0.03);
+  --card-hover: rgba(0, 0, 0, 0.06);
+  --border: rgba(0, 0, 0, 0.1);
+  --border-hover: rgba(0, 0, 0, 0.18);
+  --surface-overlay: rgba(0, 0, 0, 0.05);
+  --surface-overlay-hover: rgba(0, 0, 0, 0.09);
+  --marker-bg: rgba(240, 238, 232, 0.92);
+  --marker-bg-active: rgba(240, 238, 232, 0.96);
+  --infocard-bg: rgba(240, 238, 232, 0.95);
+  --scrollbar: #c5c0b8;
+  --map-filter: none;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Leaflet map background — prevents white flash during fast pan/zoom */
+.leaflet-container {
+  background: #1a1a24 !important;
+}
+[data-theme="light"] .leaflet-container {
+  background: #ddddd5 !important;
+}
+
+/* Leaflet overrides */
+.leaflet-popup-content-wrapper {
+  background: var(--panel-bg-solid) !important;
+  color: var(--text) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important;
+}
+
+.leaflet-popup-tip {
+  background: var(--panel-bg-solid) !important;
+}
+
+.leaflet-popup-close-button {
+  color: var(--text-faint) !important;
+}
+
+/* Map tile filter for light mode */
+.map-tiles {
+  filter: var(--map-filter);
+}
+
+/* Light mode: use voyager tiles via class swap handled in Map.jsx */
+[data-theme="light"] .map-tiles-dark { display: none; }
+[data-theme="dark"] .map-tiles-light { display: none; }
+
+/* User location pulse */
+@keyframes userPulse {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50% { transform: scale(1.8); opacity: 0; }
+}
+
+/* Selected marker ping */
+@keyframes markerPing {
+  0% { transform: scale(1); opacity: 0.15; }
+  75%, 100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* Info card pull-out from blob — GPU-accelerated */
+@keyframes pullRight {
+  from { opacity: 0; transform: translateY(-50%) translateX(-12px); }
+  to { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
+
+@keyframes pullLeft {
+  from { opacity: 0; transform: translateY(-50%) translateX(12px); }
+  to { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
+
+.info-card-pull-right {
+  animation: pullRight 0.2s ease-out forwards;
+  will-change: transform, opacity;
+}
+
+.info-card-pull-left {
+  animation: pullLeft 0.2s ease-out forwards;
+  will-change: transform, opacity;
+}
+
+/* Event card hover glow */
+.event-card {
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+/* Starting soon glow pulse */
+@keyframes cardGlow {
+  0%, 100% { box-shadow: var(--glow-base); }
+  50% { box-shadow: var(--glow-peak); }
+}
+.event-card-glow {
+  animation: cardGlow 2.5s ease-in-out infinite;
+}
+
+/* Boost promoted event — subtle golden shimmer border */
+@keyframes boostShimmer {
+  0%, 100% { border-color: rgba(251,191,36,0.3); box-shadow: 0 0 8px rgba(251,191,36,0.08); }
+  50% { border-color: rgba(251,191,36,0.5); box-shadow: 0 0 14px rgba(251,191,36,0.15); }
+}
+.event-card-boost {
+  animation: boostShimmer 3s ease-in-out infinite;
+  border: 1.5px solid rgba(251,191,36,0.3) !important;
+}
+
+/* Spotlight promoted event — breathing golden glow + gradient sweep */
+@keyframes spotlightGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(251,191,36,0.12), 0 0 30px rgba(251,191,36,0.06), inset 0 0 20px rgba(251,191,36,0.03);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(251,191,36,0.22), 0 0 50px rgba(251,191,36,0.1), inset 0 0 30px rgba(251,191,36,0.05);
+  }
+}
+@keyframes spotlightSweep {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.event-card-spotlight {
+  animation: spotlightGlow 2.5s ease-in-out infinite;
+  border: 1.5px solid rgba(251,191,36,0.45) !important;
+  background-image: linear-gradient(90deg, transparent 30%, rgba(251,191,36,0.06) 50%, transparent 70%) !important;
+  background-size: 200% 100%;
+  animation: spotlightGlow 2.5s ease-in-out infinite, spotlightSweep 4s ease-in-out infinite;
+}
+
+/* Inspect glow when selected from map */
+@keyframes inspectGlow {
+  0% { box-shadow: 0 0 0 0 var(--inspect-color, #60a5fa); }
+  30% { box-shadow: 0 0 20px 4px color-mix(in srgb, var(--inspect-color, #60a5fa) 35%, transparent); }
+  100% { box-shadow: 0 0 12px 2px color-mix(in srgb, var(--inspect-color, #60a5fa) 20%, transparent); }
+}
+.event-card-inspect {
+  animation: inspectGlow 0.6s ease-out forwards;
+}
+
+/* Hint toast slide up */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Hide scrollbar for category chips */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar);
+  border-radius: 3px;
+}
