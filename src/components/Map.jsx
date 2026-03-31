@@ -368,8 +368,9 @@ function ZoomAwareInfoCard({ selectedEvent, onSelectEvent, pinned, onTogglePin }
   return <MapInfoCard event={selectedEvent} onClose={() => onSelectEvent?.(null)} pinned={pinned} onTogglePin={onTogglePin} />;
 }
 
-export default function EventMap({ location, homeLocation: homeLoc, events, radiusKm, highlightedEvent, selectedEvent, onSelectEvent, pinnedIds, onTogglePin, panelCollapsed, onAbout, mobile }) {
-  const lastSelectTimeRef = useRef(0);
+export default function EventMap({ location, homeLocation: homeLoc, events, radiusKm, highlightedEvent, selectedEvent, onSelectEvent, pinnedIds, onTogglePin, panelCollapsed, onAbout, mobile, lastSelectTime: externalLastSelectTime }) {
+  const internalRef = useRef(0);
+  const lastSelectTimeRef = externalLastSelectTime || internalRef;
   const { theme } = useTheme();
   if (!location) return null;
 

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useGeolocation } from './hooks/useGeolocation';
 import { useEvents } from './hooks/useEvents';
 import { addLocalEvent } from './services/localEvents';
@@ -38,6 +38,7 @@ export default function App() {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [pinnedIds, setPinnedIds] = useState(new Set());
   const [panelCollapsed, setPanelCollapsed] = useState(false);
+  const lastSelectTime = useRef(0);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showSupporter, setShowSupporter] = useState(false);
@@ -161,6 +162,7 @@ export default function App() {
     onDateRangeChange: (r) => { setDateRange(r); setTimeFilter(r ? 'custom' : 'anytime'); },
     onEventHover: isMobile ? null : setHighlightedEvent,
     onEventClick: (event) => {
+      if (event) lastSelectTime.current = Date.now();
       setSelectedEvent(event);
       if (isMobile && event) setSheetExpanded(false);
     },
@@ -194,6 +196,7 @@ export default function App() {
             onTogglePin={togglePin}
             panelCollapsed={false}
             onAbout={() => setShowAbout(true)}
+            lastSelectTime={lastSelectTime}
             mobile
           />
 
