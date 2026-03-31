@@ -369,8 +369,8 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                 </div>
               ) : (
                 <>
-                  {/* Promoted events — sticky at top */}
-                  {sortedEvents.some((e) => e.promoted) && (
+                  {/* Promoted events — sticky on desktop, inline on mobile */}
+                  {!mobile && sortedEvents.some((e) => e.promoted) && (
                     <div
                       className="sticky -top-3 z-20 pb-2 -mx-3 px-3 pt-4"
                       style={{ background: 'var(--panel-bg-solid)' }}
@@ -397,9 +397,9 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                     </div>
                   )}
 
-                  {/* Regular events */}
+                  {/* Events list — on mobile includes promoted inline, on desktop only non-promoted */}
                   <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-2">
-                    {sortedEvents.filter((e) => !e.promoted).map((event) => (
+                    {(mobile ? sortedEvents : sortedEvents.filter((e) => !e.promoted)).map((event) => (
                       <EventCard
                         key={event.id}
                         ref={(el) => { cardRefs.current[event.id] = el; }}
