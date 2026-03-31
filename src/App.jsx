@@ -192,7 +192,7 @@ export default function App() {
             onSelectEvent={setSelectedEvent}
             pinnedIds={pinnedIds}
             onTogglePin={togglePin}
-            panelCollapsed={!sheetExpanded}
+            panelCollapsed={false}
             onAbout={() => setShowAbout(true)}
             mobile
           />
