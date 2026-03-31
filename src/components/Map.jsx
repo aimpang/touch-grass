@@ -174,6 +174,53 @@ function FlyToHandler({ center, selectedEvent, lastSelectTime, mobile }) {
   return null;
 }
 
+// Hide markers + overlays during pinch gesture for smooth zoom on mobile
+function PinchPerformance() {
+  const map = useMap();
+  useEffect(() => {
+    const container = map.getContainer();
+    let hidden = false;
+    const panes = ['markerPane', 'overlayPane', 'shadowPane'];
+
+    function hide() {
+      if (hidden) return;
+      hidden = true;
+      for (const name of panes) {
+        const pane = map.getPane(name);
+        if (pane) pane.style.visibility = 'hidden';
+      }
+    }
+    function show() {
+      if (!hidden) return;
+      hidden = false;
+      for (const name of panes) {
+        const pane = map.getPane(name);
+        if (pane) pane.style.visibility = '';
+      }
+    }
+
+    function onTouch(e) {
+      if (e.touches.length >= 2) hide();
+    }
+    function onTouchEnd(e) {
+      if (e.touches.length < 2) show();
+    }
+
+    container.addEventListener('touchstart', onTouch, { passive: true });
+    container.addEventListener('touchmove', onTouch, { passive: true });
+    container.addEventListener('touchend', onTouchEnd, { passive: true });
+    container.addEventListener('touchcancel', onTouchEnd, { passive: true });
+    return () => {
+      container.removeEventListener('touchstart', onTouch);
+      container.removeEventListener('touchmove', onTouch);
+      container.removeEventListener('touchend', onTouchEnd);
+      container.removeEventListener('touchcancel', onTouchEnd);
+      show();
+    };
+  }, [map]);
+  return null;
+}
+
 function MapClickHandler({ onSelectEvent, lastSelectTime }) {
   const map = useMap();
   useEffect(() => {
@@ -401,6 +448,7 @@ export default function EventMap({ location, homeLocation: homeLoc, events, radi
         mobile={mobile}
       />
 
+      <PinchPerformance />
       <MapResizer panelCollapsed={panelCollapsed} />
       <MapControls userCenter={center} homeCenter={homeLoc ? [homeLoc.lat, homeLoc.lng] : null} />
       <AboutButton onAbout={onAbout} mobile={mobile} />
