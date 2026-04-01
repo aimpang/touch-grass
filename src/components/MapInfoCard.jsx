@@ -177,7 +177,7 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
                 </div>
                 <div style={{ fontSize: 10, color: 'var(--text-faint)', marginTop: 2 }}>
                   {dateStr} · {timeStr}
-                  {event.distance != null && <span> · {event.distance.toFixed(1)}km</span>}
+                  {event.distance != null && <span> · {event.distance.toFixed(1)} km</span>}
                 </div>
                 <div style={{ display: 'flex', gap: 4, marginTop: 5, flexWrap: 'wrap' }}>
                   {(() => {

@@ -122,7 +122,7 @@ export default forwardRef(function EventCard({ event, selected, pinned, onToggle
             <button
               onClick={(e) => { e.stopPropagation(); onTogglePin?.(event.id); }}
               className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] transition-all ${
-                pinned ? 'opacity-100' : 'opacity-0 group-hover:opacity-50 hover:!opacity-100'
+                pinned ? 'opacity-100' : 'opacity-0 group-hover:opacity-50 hover:!opacity-100 touch-reveal'
               }`}
               style={{
                 background: pinned ? `${cat.color}20` : 'transparent',
@@ -134,7 +134,7 @@ export default forwardRef(function EventCard({ event, selected, pinned, onToggle
             {!isPromoted && (
               <button
                 onClick={(e) => { e.stopPropagation(); onPromote?.(event); }}
-                className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] transition-all opacity-0 group-hover:opacity-50 hover:!opacity-100"
+                className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] transition-all opacity-0 group-hover:opacity-50 hover:!opacity-100 touch-reveal"
                 aria-label="Promote this event"
               >
                 🚀
@@ -161,7 +161,7 @@ export default forwardRef(function EventCard({ event, selected, pinned, onToggle
                 {event.free ? 'Free' : event.price ? `From $${event.price}` : 'Paid'}
               </span>
             )}
-            <span className="text-[10px] font-medium" style={{ color: 'var(--text-faintest)' }}>{event.distance.toFixed(1)}km</span>
+            <span className="text-[10px] font-medium" style={{ color: 'var(--text-faintest)' }}>{event.distance.toFixed(1)} km</span>
           </div>
         </div>
       </div>

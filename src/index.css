@@ -35,7 +35,7 @@
   --text: #2a2a2a;
   --text-muted: #555;
   --text-faint: #5f5f5f;
-  --text-faintest: #6b6b6b;
+  --text-faintest: #646464;
   --panel-bg: rgba(240, 238, 232, 0.95);
   --panel-bg-solid: #f0eee8;
   --card-bg: rgba(0, 0, 0, 0.03);
@@ -118,12 +118,10 @@ html, body, #root {
 
 .info-card-pull-right {
   animation: pullRight 0.2s ease-out forwards;
-  will-change: transform, opacity;
 }
 
 .info-card-pull-left {
   animation: pullLeft 0.2s ease-out forwards;
-  will-change: transform, opacity;
 }
 
 /* Event card hover glow */
@@ -210,13 +208,39 @@ html, body, #root {
 }
 
 .infocard-close-btn:hover {
-  color: #fff !important;
-  background: rgba(255,255,255,0.1) !important;
+  color: var(--text) !important;
+  background: var(--surface-overlay-hover) !important;
 }
 
 .infocard-cta-btn:hover {
   background: var(--cta-bg-hover) !important;
   border-color: var(--cta-border-hover) !important;
+}
+
+/* Touch device: show hover-dependent buttons at low opacity */
+@media (hover: none) {
+  .touch-reveal {
+    opacity: 0.4 !important;
+  }
+  .touch-reveal:active {
+    opacity: 1 !important;
+  }
+}
+
+/* Reduced motion: disable non-essential animations */
+@media (prefers-reduced-motion: reduce) {
+  .event-card-glow,
+  .event-card-boost,
+  .event-card-spotlight,
+  .event-card-inspect,
+  .info-card-pull-right,
+  .info-card-pull-left {
+    animation: none !important;
+  }
+  .animate-ping,
+  .animate-spin {
+    animation: none !important;
+  }
 }
 
 /* Custom scrollbar */
