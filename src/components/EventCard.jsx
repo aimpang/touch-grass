@@ -52,17 +52,11 @@ export default forwardRef(function EventCard({ event, selected, pinned, onToggle
         '--glow-base': `0 0 12px ${cat.color}15, 0 0 0 1px ${cat.color}20`,
         '--glow-peak': `0 0 24px ${cat.color}30, 0 0 0 1px ${cat.color}40`,
         '--inspect-color': cat.color,
+        '--hover-shadow': `0 8px 24px ${cat.color}18, inset 0 1px 0 ${cat.color}15`,
+        '--hover-border': `${cat.color}55`,
       }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = `0 8px 24px ${cat.color}18, inset 0 1px 0 ${cat.color}15`;
-        e.currentTarget.style.borderColor = `${cat.color}55`;
-        onHover?.(event);
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = '';
-        e.currentTarget.style.borderColor = baseBorder;
-        onHover?.(null);
-      }}
+      onMouseEnter={() => onHover?.(event)}
+      onMouseLeave={() => onHover?.(null)}
       onClick={() => onClick?.(event)}
     >
       {/* Top accent bar */}
@@ -80,7 +74,7 @@ export default forwardRef(function EventCard({ event, selected, pinned, onToggle
           <div className="flex items-center gap-1.5">
             <span className={`${compact ? 'text-sm' : 'text-base'} leading-none`}>{cat.emoji}</span>
             <span
-              className={`${compact ? 'text-[9px]' : 'text-[10px]'} font-bold uppercase tracking-wider`}
+              className={`${compact ? 'text-[10px]' : 'text-[11px]'} font-bold uppercase tracking-wider`}
               style={{ color: `${cat.color}cc` }}
             >
               {event.category}
@@ -88,13 +82,13 @@ export default forwardRef(function EventCard({ event, selected, pinned, onToggle
           </div>
           <div className="flex items-center gap-1">
             {isPromoted && (
-              <span className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{ background: 'rgba(251,191,36,0.15)', color: '#fbbf24' }}>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: 'rgba(251,191,36,0.15)', color: '#fbbf24' }}>
                 {isSpotlight ? '⭐ Promoted' : 'Promoted'}
               </span>
             )}
             {status && (
             <span
-              className="text-[9px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1"
+              className="text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1"
               style={{ background: status.bgColor, color: status.color }}
             >
               {isLive && (
@@ -115,33 +109,33 @@ export default forwardRef(function EventCard({ event, selected, pinned, onToggle
         </h3>
 
         {/* Venue with subtle icon */}
-        <p className={`${compact ? 'text-[10px] mb-1.5' : 'text-[11px] mb-2.5'} truncate`} style={{ color: 'var(--text-faint)' }}>
+        <p className={`${compact ? 'text-[11px] mb-1.5' : 'text-[11px] mb-2.5'} truncate`} style={{ color: 'var(--text-faint)' }}>
           📍 {event.venue}
         </p>
 
         {/* Bottom bar */}
         <div className={`flex items-center ${compact ? 'pt-1.5' : 'pt-2'} border-t gap-1.5`} style={{ borderColor: `${cat.color}0a` }}>
-          <span className="text-[10px] font-medium truncate" style={{ color: 'var(--text-faint)' }}>
+          <span className="text-[11px] font-medium truncate" style={{ color: 'var(--text-faint)' }}>
             {dayStr} · {timeStr}
           </span>
           <div className="flex items-center gap-1 ml-auto shrink-0">
             <button
               onClick={(e) => { e.stopPropagation(); onTogglePin?.(event.id); }}
-              className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] transition-all ${
+              className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] transition-all ${
                 pinned ? 'opacity-100' : 'opacity-0 group-hover:opacity-50 hover:!opacity-100'
               }`}
               style={{
                 background: pinned ? `${cat.color}20` : 'transparent',
               }}
-              title={pinned ? 'Unpin' : 'Pin to top'}
+              aria-label={pinned ? 'Unpin event' : 'Pin event'}
             >
               📌
             </button>
             {!isPromoted && (
               <button
                 onClick={(e) => { e.stopPropagation(); onPromote?.(event); }}
-                className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] transition-all opacity-0 group-hover:opacity-50 hover:!opacity-100"
-                title="Promote this event"
+                className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] transition-all opacity-0 group-hover:opacity-50 hover:!opacity-100"
+                aria-label="Promote this event"
               >
                 🚀
               </button>

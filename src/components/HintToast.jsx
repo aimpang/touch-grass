@@ -80,7 +80,7 @@ export default function HintToast({ hint, onDismiss, onAction }) {
           {hint.action && (
             <button
               onClick={() => { onAction(hint.action); onDismiss(); }}
-              className="text-[10px] font-bold mt-1.5 px-3 py-1 rounded-full transition-colors"
+              className="text-[11px] font-bold mt-1.5 px-3 py-1 rounded-full transition-colors"
               style={{
                 background: hint.action === 'support' ? 'rgba(52,211,153,0.15)' : 'rgba(251,191,36,0.15)',
                 color: hint.action === 'support' ? '#34d399' : '#fbbf24',
@@ -92,7 +92,8 @@ export default function HintToast({ hint, onDismiss, onAction }) {
         </div>
         <button
           onClick={onDismiss}
-          className="shrink-0 text-[10px] mt-0.5 opacity-40 hover:opacity-80"
+          aria-label="Dismiss hint"
+          className="shrink-0 w-7 h-7 flex items-center justify-center text-[10px] mt-0.5 opacity-40 hover:opacity-80"
         >
           ✕
         </button>

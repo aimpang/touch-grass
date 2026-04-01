@@ -9,7 +9,7 @@ export function getEventStatus(event) {
 
   if (now > end && now < end + 60 * 60 * 1000) {
     // Ended within the last hour
-    return { key: 'ended', label: 'Just ended', color: '#737373', bgColor: 'rgba(115,115,115,0.15)' };
+    return { key: 'ended', label: 'Just ended', color: '#8a8a8a', bgColor: 'rgba(138,138,138,0.15)' };
   }
 
   if (now >= start && now <= end) {

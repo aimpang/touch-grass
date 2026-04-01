@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useModalA11y } from '../hooks/useModalA11y';
 
 export default function CitySearchModal({ onSelect, onClose }) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
+  const contentRef = useModalA11y(onClose);
 
   async function search(e) {
     e.preventDefault();
@@ -41,13 +43,17 @@ export default function CitySearchModal({ onSelect, onClose }) {
       onClick={onClose}
     >
       <div
+        ref={contentRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Browse another city"
         className="w-[380px] rounded-2xl p-5"
         style={{ background: 'var(--panel-bg-solid)', border: '1px solid var(--border)' }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-bold" style={{ color: 'var(--text)' }}>🌍 Browse Another City</h2>
-          <button onClick={onClose} className="text-xs px-2 py-1 rounded-lg" style={{ background: 'var(--surface-overlay)', color: 'var(--text-faint)' }}>✕</button>
+          <button onClick={onClose} aria-label="Close" className="text-xs min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg" style={{ background: 'var(--surface-overlay)', color: 'var(--text-faint)' }}>✕</button>
         </div>
 
         <form onSubmit={search} className="flex gap-2 mb-4">
@@ -78,13 +84,10 @@ export default function CitySearchModal({ onSelect, onClose }) {
               <button
                 key={i}
                 onClick={() => { onSelect(r.lat, r.lng, r.name); onClose(); }}
-                className="w-full text-left p-3 rounded-xl transition-colors"
-                style={{ background: 'var(--surface-overlay)' }}
-                onMouseEnter={(e) => e.currentTarget.style.background = 'var(--surface-overlay-hover)'}
-                onMouseLeave={(e) => e.currentTarget.style.background = 'var(--surface-overlay)'}
+                className="w-full text-left p-3 rounded-xl transition-colors surface-hover"
               >
                 <div className="text-xs font-semibold" style={{ color: 'var(--text)' }}>📍 {r.name}</div>
-                <div className="text-[10px] mt-0.5" style={{ color: 'var(--text-faintest)' }}>{r.display}</div>
+                <div className="text-[11px] mt-0.5" style={{ color: 'var(--text-faintest)' }}>{r.display}</div>
               </button>
             ))}
           </div>

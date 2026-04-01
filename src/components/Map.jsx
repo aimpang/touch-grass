@@ -48,8 +48,8 @@ const CAT_SVG = {
 
 const iconCache = {};
 
-function buildMarkerIcon(category, state) {
-  const key = `${category}-${state}`;
+function buildMarkerIcon(category, state, theme = 'dark') {
+  const key = `${category}-${state}-${theme}`;
   if (iconCache[key]) return iconCache[key];
 
   const color = CAT[category] || DEFAULT_COLOR;
@@ -57,6 +57,12 @@ function buildMarkerIcon(category, state) {
   const isSelected = state === 'selected';
   const isPromoted = state === 'promoted';
   const isActive = isHighlighted || isSelected || isPromoted;
+  const isDark = theme === 'dark';
+
+  // Theme-aware marker background
+  const markerBg = isDark
+    ? `rgba(18, 18, 28, ${isActive ? '0.92' : '0.8'})`
+    : `rgba(240, 238, 232, ${isActive ? '0.96' : '0.9'})`;
 
   // Sizes
   const dot = isActive ? 36 : 28;
@@ -81,7 +87,7 @@ function buildMarkerIcon(category, state) {
       "></div>` : ''}
       <div style="
         width: ${dot}px; height: ${dot}px; border-radius: 50%;
-        background: rgba(18, 18, 28, ${isActive ? '0.92' : '0.8'});
+        background: ${markerBg};
         border: ${isPromoted ? '2px solid #fbbf24' : `1.5px solid ${color}${isActive ? '99' : '55'}`};
         ${isActive ? `box-shadow: ${isPromoted ? '0 0 16px rgba(251,191,36,0.35)' : `0 0 16px ${color}40`};` : ''}
         display: flex; align-items: center; justify-content: center;
@@ -302,7 +308,7 @@ const TILES = {
 };
 
 // Only renders markers within the current viewport + a buffer
-const VisibleMarkers = React.memo(function VisibleMarkers({ events, highlightedEvent, selectedEvent, onSelectEvent }) {
+const VisibleMarkers = React.memo(function VisibleMarkers({ events, highlightedEvent, selectedEvent, onSelectEvent, theme }) {
   const map = useMap();
   const [bounds, setBounds] = React.useState(null);
   const handlersRef = useRef({});
@@ -333,7 +339,7 @@ const VisibleMarkers = React.memo(function VisibleMarkers({ events, highlightedE
       <Marker
         key={event.id}
         position={[event.lat, event.lng]}
-        icon={buildMarkerIcon(event.category, state)}
+        icon={buildMarkerIcon(event.category, state, theme)}
         zIndexOffset={isSelected ? 2000 : isHighlighted ? 1000 : isSpotlight ? 500 : 0}
         eventHandlers={handlersRef.current[event.id]}
       />
@@ -423,6 +429,7 @@ export default function EventMap({ location, homeLocation: homeLoc, events, radi
         highlightedEvent={highlightedEvent}
         selectedEvent={selectedEvent}
         onSelectEvent={onSelectEvent}
+        theme={theme}
       />
 
       <ZoomAwareInfoCard

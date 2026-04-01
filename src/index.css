@@ -13,8 +13,8 @@
   --bg: #111118;
   --text: #e5e5e5;
   --text-muted: #a3a3a3;
-  --text-faint: #737373;
-  --text-faintest: #525252;
+  --text-faint: #8a8a8a;
+  --text-faintest: #767676;
   --panel-bg: rgba(18, 18, 28, 0.95);
   --panel-bg-solid: #12121c;
   --card-bg: rgba(255, 255, 255, 0.03);
@@ -34,8 +34,8 @@
   --bg: #eeeee8;
   --text: #2a2a2a;
   --text-muted: #555;
-  --text-faint: #777;
-  --text-faintest: #999;
+  --text-faint: #5f5f5f;
+  --text-faintest: #6b6b6b;
   --panel-bg: rgba(240, 238, 232, 0.95);
   --panel-bg-solid: #f0eee8;
   --card-bg: rgba(0, 0, 0, 0.03);
@@ -130,6 +130,10 @@ html, body, #root {
 .event-card {
   transition: box-shadow 0.15s ease, border-color 0.15s ease;
 }
+.event-card:hover {
+  box-shadow: var(--hover-shadow);
+  border-color: var(--hover-border);
+}
 
 /* Starting soon glow pulse */
 @keyframes cardGlow {
@@ -196,6 +200,24 @@ html, body, #root {
 /* Hide scrollbar for category chips */
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Reusable hover utilities */
+.surface-hover {
+  background: var(--surface-overlay);
+}
+.surface-hover:hover {
+  background: var(--surface-overlay-hover);
+}
+
+.infocard-close-btn:hover {
+  color: #fff !important;
+  background: rgba(255,255,255,0.1) !important;
+}
+
+.infocard-cta-btn:hover {
+  background: var(--cta-bg-hover) !important;
+  border-color: var(--cta-border-hover) !important;
+}
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {

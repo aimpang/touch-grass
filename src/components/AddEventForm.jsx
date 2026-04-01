@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useModalA11y } from '../hooks/useModalA11y';
 
 const CATEGORIES = [
   'Music', 'Food', 'Market', 'Fitness', 'Comedy',
@@ -6,6 +7,7 @@ const CATEGORIES = [
 ];
 
 export default function AddEventForm({ userLocation, onSubmit, onClose }) {
+  const contentRef = useModalA11y(onClose);
   const [form, setForm] = useState({
     name: '',
     venue: '',
@@ -64,15 +66,20 @@ export default function AddEventForm({ userLocation, onSubmit, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[2000] flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}>
+    <div className="fixed inset-0 z-[2000] flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }} onClick={onClose}>
       <form
+        ref={contentRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Add event"
         onSubmit={handleSubmit}
         className="w-[400px] max-h-[85vh] overflow-y-auto rounded-2xl p-5"
         style={{ background: 'var(--panel-bg-solid)', border: '1px solid var(--border)' }}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-bold" style={{ color: 'var(--text)' }}>Add Event 🌿</h2>
-          <button type="button" onClick={onClose} className="text-xs px-2 py-1 rounded-lg" style={{ background: 'var(--surface-overlay)', color: 'var(--text-faint)' }}>
+          <button type="button" onClick={onClose} aria-label="Close" className="text-xs min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg" style={{ background: 'var(--surface-overlay)', color: 'var(--text-faint)' }}>
             ✕
           </button>
         </div>
@@ -159,7 +166,7 @@ export default function AddEventForm({ userLocation, onSubmit, onClose }) {
           </button>
         </div>
 
-        <p className="text-[10px] mt-3 text-center" style={{ color: 'var(--text-faintest)' }}>
+        <p className="text-[11px] mt-3 text-center" style={{ color: 'var(--text-faintest)' }}>
           Event will be placed at your current location
         </p>
       </form>

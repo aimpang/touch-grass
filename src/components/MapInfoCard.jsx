@@ -171,11 +171,11 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
           <div style={{ padding: '8px 10px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 6 }}>
               <div style={{ minWidth: 0, flex: 1 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{event.name}</div>
-                <div style={{ fontSize: 9, color: 'var(--text-faint)', marginTop: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{event.name}</div>
+                <div style={{ fontSize: 10, color: 'var(--text-faint)', marginTop: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   📍 {event.venue}
                 </div>
-                <div style={{ fontSize: 9, color: 'var(--text-faint)', marginTop: 2 }}>
+                <div style={{ fontSize: 10, color: 'var(--text-faint)', marginTop: 2 }}>
                   {dateStr} · {timeStr}
                   {event.distance != null && <span> · {event.distance.toFixed(1)}km</span>}
                 </div>
@@ -184,7 +184,7 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
                     const status = getEventStatus(event);
                     return status ? (
                       <span style={{
-                        fontSize: 8, fontWeight: 700, padding: '1px 6px', borderRadius: 99,
+                        fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 99,
                         background: status.bgColor, color: status.color,
                         display: 'flex', alignItems: 'center', gap: 3,
                       }}>
@@ -193,11 +193,11 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
                       </span>
                     ) : null;
                   })()}
-                  <span style={{ fontSize: 8, fontWeight: 600, padding: '1px 6px', borderRadius: 99, background: `${cat.bg}20`, color: cat.light }}>
+                  <span style={{ fontSize: 10, fontWeight: 600, padding: '1px 6px', borderRadius: 99, background: `${cat.bg}20`, color: cat.light }}>
                     {event.category}
                   </span>
                   <span style={{
-                    fontSize: 8, fontWeight: 700, padding: '1px 6px', borderRadius: 99,
+                    fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 99,
                     background: event.free ? 'rgba(34,197,94,0.15)' : event.price ? 'rgba(245,158,11,0.15)' : 'rgba(115,115,115,0.15)',
                     color: event.free ? '#4ade80' : event.price ? '#fbbf24' : '#a3a3a3',
                   }}>
@@ -206,7 +206,7 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
                 </div>
                 {event.description && (
                   <div style={{
-                    fontSize: 9, color: 'var(--text-faintest)', lineHeight: 1.4, marginTop: 4,
+                    fontSize: 10, color: 'var(--text-faintest)', lineHeight: 1.4, marginTop: 4,
                     display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
                   }}>
                     {event.description}
@@ -217,21 +217,23 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
                 {onTogglePin && (
                   <button
                     onClick={(e) => { e.stopPropagation(); onTogglePin(event.id); }}
+                    aria-label={pinned ? 'Unpin event' : 'Pin event'}
                     style={{
-                      width: 20, height: 20, borderRadius: 5, border: 'none',
+                      width: 28, height: 28, borderRadius: 6, border: 'none',
                       background: pinned ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.06)',
                       color: pinned ? '#60a5fa' : 'var(--text-faintest)',
-                      cursor: 'pointer', fontSize: 10, display: 'flex',
+                      cursor: 'pointer', fontSize: 11, display: 'flex',
                       alignItems: 'center', justifyContent: 'center',
                     }}
                   >📌</button>
                 )}
                 <button
                   onClick={onClose}
+                  aria-label="Close info card"
                   style={{
-                    width: 20, height: 20, borderRadius: 5, border: 'none',
+                    width: 28, height: 28, borderRadius: 6, border: 'none',
                     background: 'rgba(255,255,255,0.06)', color: 'var(--text-faintest)',
-                    cursor: 'pointer', fontSize: 9, display: 'flex',
+                    cursor: 'pointer', fontSize: 10, display: 'flex',
                     alignItems: 'center', justifyContent: 'center',
                   }}
                 >✕</button>
@@ -268,7 +270,7 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
                   const status = getEventStatus(event);
                   return status ? (
                     <span style={{
-                      fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 99,
+                      fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 99,
                       background: status.bgColor, color: status.color,
                       display: 'flex', alignItems: 'center', gap: 4,
                     }}>
@@ -283,22 +285,22 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
                   ) : null;
                 })()}
                 <span style={{
-                  fontSize: 9, fontWeight: 600, padding: '2px 7px', borderRadius: 99,
+                  fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 99,
                   background: `${cat.bg}20`, color: cat.light,
                 }}>
                   {event.category}
                 </span>
                 {event.saleStatus === 'soldout' ? (
-                  <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 99, background: 'rgba(239,68,68,0.15)', color: '#f87171' }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 99, background: 'rgba(239,68,68,0.15)', color: '#f87171' }}>
                     Sold Out
                   </span>
                 ) : event.saleStatus === 'rescheduled' ? (
-                  <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 99, background: 'rgba(251,146,60,0.15)', color: '#fb923c' }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 99, background: 'rgba(251,146,60,0.15)', color: '#fb923c' }}>
                     Rescheduled
                   </span>
                 ) : (
                   <span style={{
-                    fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 99,
+                    fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 99,
                     background: event.free ? 'rgba(34,197,94,0.15)' : event.price ? 'rgba(245,158,11,0.15)' : 'rgba(115,115,115,0.15)',
                     color: event.free ? '#4ade80' : event.price ? '#fbbf24' : '#a3a3a3',
                   }}>
@@ -311,12 +313,12 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
               {onTogglePin && (
                 <button
                   onClick={(e) => { e.stopPropagation(); onTogglePin(event.id); }}
-                  title={pinned ? 'Unpin event' : 'Pin event'}
+                  aria-label={pinned ? 'Unpin event' : 'Pin event'}
                   style={{
-                    width: 22, height: 22, borderRadius: 6, border: 'none',
+                    width: 28, height: 28, borderRadius: 6, border: 'none',
                     background: pinned ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.06)',
                     color: pinned ? '#60a5fa' : 'var(--text-faintest)',
-                    cursor: 'pointer', fontSize: 11, display: 'flex',
+                    cursor: 'pointer', fontSize: 12, display: 'flex',
                     alignItems: 'center', justifyContent: 'center',
                   }}
                 >
@@ -325,14 +327,14 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
               )}
               <button
                 onClick={onClose}
+                aria-label="Close info card"
+                className="infocard-close-btn"
                 style={{
-                  width: 22, height: 22, borderRadius: 6, border: 'none',
+                  width: 28, height: 28, borderRadius: 6, border: 'none',
                   background: 'rgba(255,255,255,0.06)', color: 'var(--text-faintest)',
-                  cursor: 'pointer', fontSize: 10, display: 'flex',
+                  cursor: 'pointer', fontSize: 11, display: 'flex',
                   alignItems: 'center', justifyContent: 'center',
                 }}
-                onMouseEnter={(e) => { e.target.style.color = '#fff'; e.target.style.background = 'rgba(255,255,255,0.1)'; }}
-                onMouseLeave={(e) => { e.target.style.color = '#666'; e.target.style.background = 'rgba(255,255,255,0.06)'; }}
               >
                 ✕
               </button>
@@ -342,24 +344,24 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
 
         {/* Body */}
         <div style={{ padding: '0 14px 12px', display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <div style={{ fontSize: 10, color: 'var(--text-faint)', lineHeight: 1.5 }}>{event.description}</div>
+          <div style={{ fontSize: 11, color: 'var(--text-faint)', lineHeight: 1.5 }}>{event.description}</div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginTop: 2 }}>
             <InfoRow icon="location" color={cat.bg}>
-              <span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 500 }}>{event.venue}</span>
-              {event.address && <span style={{ fontSize: 9, color: 'var(--text-faintest)', display: 'block', marginTop: 1 }}>{event.address}</span>}
+              <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>{event.venue}</span>
+              {event.address && <span style={{ fontSize: 10, color: 'var(--text-faintest)', display: 'block', marginTop: 1 }}>{event.address}</span>}
             </InfoRow>
             <InfoRow icon="calendar" color={cat.bg}>
-              <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{dateStr} · {timeStr}</span>
+              <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{dateStr} · {timeStr}</span>
             </InfoRow>
             {event.phone && (
               <InfoRow icon="phone" color={cat.bg}>
-                <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{event.phone}</span>
+                <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{event.phone}</span>
               </InfoRow>
             )}
             {event.distance != null && (
               <InfoRow icon="distance" color={cat.bg}>
-                <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{event.distance.toFixed(1)} km away</span>
+                <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{event.distance.toFixed(1)} km away</span>
               </InfoRow>
             )}
             {!event.url || event.source !== 'ticketmaster' ? (
@@ -370,9 +372,8 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    style={{ fontSize: 10, color: cat.bg, fontWeight: 500, textDecoration: 'none' }}
-                    onMouseEnter={(e) => { e.target.style.textDecoration = 'underline'; }}
-                    onMouseLeave={(e) => { e.target.style.textDecoration = 'none'; }}
+                    className="hover:underline"
+                    style={{ fontSize: 11, color: cat.bg, fontWeight: 500, textDecoration: 'none' }}
                   >
                     Event page ↗
                   </a>
@@ -383,13 +384,12 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      style={{ fontSize: 10, color: cat.bg, fontWeight: 500, textDecoration: 'none' }}
-                      onMouseEnter={(e) => { e.target.style.textDecoration = 'underline'; }}
-                      onMouseLeave={(e) => { e.target.style.textDecoration = 'none'; }}
+                      className="hover:underline"
+                      style={{ fontSize: 11, color: cat.bg, fontWeight: 500, textDecoration: 'none' }}
                     >
                       Search for this event ↗
                     </a>
-                    <div style={{ fontSize: 9, color: 'var(--text-faintest)', marginTop: 2 }}>
+                    <div style={{ fontSize: 10, color: 'var(--text-faintest)', marginTop: 2 }}>
                       No direct link available — try the venue or organizer
                     </div>
                   </div>
@@ -405,17 +405,18 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
+              className="infocard-cta-btn"
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                 margin: '4px 14px 12px', padding: '9px 16px',
                 borderRadius: 99, textDecoration: 'none',
-                background: `${cat.bg}20`, color: cat.bg,
+                '--cta-bg': `${cat.bg}20`, '--cta-bg-hover': `${cat.bg}35`,
+                '--cta-border': `${cat.bg}35`, '--cta-border-hover': `${cat.bg}50`,
+                background: `var(--cta-bg)`, color: cat.bg,
                 fontSize: 11, fontWeight: 700,
-                border: `1.5px solid ${cat.bg}35`,
+                border: `1.5px solid var(--cta-border)`,
                 transition: 'all 0.15s',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = `${cat.bg}35`; e.currentTarget.style.borderColor = `${cat.bg}50`; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = `${cat.bg}20`; e.currentTarget.style.borderColor = `${cat.bg}35`; }}
             >
               🎟️ Get Tickets <span style={{ fontSize: 13 }}>→</span>
             </a>
@@ -437,7 +438,7 @@ function InfoRow({ icon, color, children }) {
         background: `${color}12`, display: 'flex',
         alignItems: 'center', justifyContent: 'center',
       }}>
-        <IconSvg name={icon} color="#777" />
+        <IconSvg name={icon} color="#8a8a8a" />
       </div>
       <div style={{ minWidth: 0, flex: 1, paddingTop: 2 }}>{children}</div>
     </div>

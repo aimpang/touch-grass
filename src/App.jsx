@@ -218,11 +218,12 @@ export default function App() {
             {/* Drag handle + peek bar */}
             <button
               onClick={() => setSheetExpanded(!sheetExpanded)}
+              aria-label={sheetExpanded ? 'Collapse event panel' : 'Expand event panel'}
               className="w-full flex flex-col items-center pt-2 pb-1.5 shrink-0 gap-1.5"
             >
               <div className="w-10 h-1 rounded-full" style={{ background: 'var(--border-hover)' }} />
               {!sheetExpanded && (
-                <span className="text-[10px] font-medium" style={{ color: 'var(--text-faintest)' }}>
+                <span className="text-[11px] font-medium" style={{ color: 'var(--text-faintest)' }}>
                   {events.length} events nearby — tap to explore
                 </span>
               )}

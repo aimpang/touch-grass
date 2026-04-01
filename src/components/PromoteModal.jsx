@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useModalA11y } from '../hooks/useModalA11y';
 
 const TIERS = [
   {
@@ -21,6 +22,7 @@ export default function PromoteModal({ event, onClose }) {
   const [selectedTier, setSelectedTier] = useState('spotlight');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const contentRef = useModalA11y(onClose);
 
   async function handlePay() {
     setLoading(true);
@@ -54,6 +56,10 @@ export default function PromoteModal({ event, onClose }) {
       onClick={onClose}
     >
       <div
+        ref={contentRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Promote event"
         className="w-[420px] max-h-[85vh] overflow-y-auto rounded-2xl p-6"
         style={{ background: 'var(--panel-bg-solid)', border: '1px solid var(--border)' }}
         onClick={(e) => e.stopPropagation()}
@@ -62,7 +68,8 @@ export default function PromoteModal({ event, onClose }) {
           <h2 className="text-sm font-bold" style={{ color: 'var(--text)' }}>Promote Event</h2>
           <button
             onClick={onClose}
-            className="text-xs px-2 py-1 rounded-lg"
+            aria-label="Close"
+            className="text-xs min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg"
             style={{ background: 'var(--surface-overlay)', color: 'var(--text-faint)' }}
           >
             ✕
@@ -72,7 +79,7 @@ export default function PromoteModal({ event, onClose }) {
         {/* Event preview */}
         <div className="mb-4 p-3 rounded-xl" style={{ background: 'var(--surface-overlay)', border: '1px solid var(--border)' }}>
           <p className="text-xs font-bold" style={{ color: 'var(--text)' }}>{event.name}</p>
-          <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-faint)' }}>{event.venue}</p>
+          <p className="text-[11px] mt-0.5" style={{ color: 'var(--text-faint)' }}>{event.venue}</p>
         </div>
 
         {/* Tier selection */}
@@ -94,12 +101,12 @@ export default function PromoteModal({ event, onClose }) {
                 </div>
                 <div className="text-right">
                   <span className="text-sm font-bold" style={{ color: '#fbbf24' }}>{tier.price}</span>
-                  <span className="text-[10px] ml-1" style={{ color: 'var(--text-faintest)' }}>/ {tier.duration}</span>
+                  <span className="text-[11px] ml-1" style={{ color: 'var(--text-faintest)' }}>/ {tier.duration}</span>
                 </div>
               </div>
               <ul className="space-y-1">
                 {tier.features.map((f, i) => (
-                  <li key={i} className="text-[10px] flex items-center gap-1.5" style={{ color: 'var(--text-faint)' }}>
+                  <li key={i} className="text-[11px] flex items-center gap-1.5" style={{ color: 'var(--text-faint)' }}>
                     <span style={{ color: '#fbbf24' }}>✓</span> {f}
                   </li>
                 ))}
@@ -124,7 +131,7 @@ export default function PromoteModal({ event, onClose }) {
           {loading ? 'Redirecting to Stripe...' : `Pay ${TIERS.find((t) => t.key === selectedTier)?.price} — Promote`}
         </button>
 
-        <p className="text-[9px] text-center mt-3" style={{ color: 'var(--text-faintest)' }}>
+        <p className="text-[10px] text-center mt-3" style={{ color: 'var(--text-faintest)' }}>
           Secure payment via Stripe. Your event will be promoted immediately after payment.
         </p>
       </div>

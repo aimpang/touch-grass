@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useModalA11y } from '../hooks/useModalA11y';
 
 export default function AboutModal({ onClose }) {
   const [page, setPage] = useState('about');
+  const contentRef = useModalA11y(onClose);
 
   return (
     <div
@@ -10,6 +12,10 @@ export default function AboutModal({ onClose }) {
       onClick={onClose}
     >
       <div
+        ref={contentRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="About Touch Grass"
         className="w-[380px] max-h-[85vh] overflow-y-auto rounded-2xl p-6"
         style={{ background: 'var(--panel-bg-solid)', border: '1px solid var(--border)' }}
         onClick={(e) => e.stopPropagation()}
@@ -20,7 +26,7 @@ export default function AboutModal({ onClose }) {
               Touch Grass
             </span>
           </h2>
-          <button onClick={onClose} className="text-xs px-2 py-1 rounded-lg" style={{ background: 'var(--surface-overlay)', color: 'var(--text-faint)' }}>✕</button>
+          <button onClick={onClose} aria-label="Close" className="text-xs min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg" style={{ background: 'var(--surface-overlay)', color: 'var(--text-faint)' }}>✕</button>
         </div>
 
         <div className="flex gap-1 mb-4 p-0.5 rounded-lg" style={{ background: 'var(--surface-overlay)' }}>
@@ -28,7 +34,7 @@ export default function AboutModal({ onClose }) {
             <button
               key={key}
               onClick={() => setPage(key)}
-              className="flex-1 text-[10px] py-1.5 rounded-md font-medium transition-colors"
+              className="flex-1 text-[11px] py-1.5 rounded-md font-medium transition-colors"
               style={{
                 background: page === key ? 'var(--surface-overlay-hover)' : 'transparent',
                 color: page === key ? 'var(--text)' : 'var(--text-faintest)',
@@ -45,16 +51,16 @@ export default function AboutModal({ onClose }) {
               <p className="mb-3">
                 Discover events near you — concerts, food, comedy, sports, meetups, and more. All on a live map.
               </p>
-              <div className="space-y-1 text-[10px]" style={{ color: 'var(--text-faintest)' }}>
+              <div className="space-y-1 text-[11px]" style={{ color: 'var(--text-faintest)' }}>
                 <p>Events from <A href="https://www.ticketmaster.com">Ticketmaster</A>, <A href="https://www.predicthq.com">PredictHQ</A> & <A href="https://www.meetup.com">Meetup</A></p>
                 <p>Maps by <A href="https://carto.com">CARTO</A> & <A href="https://www.openstreetmap.org">OpenStreetMap</A></p>
               </div>
               <div className="mt-4 pt-3 space-y-2" style={{ borderTop: '1px solid var(--border)' }}>
-                <p className="text-[10px]" style={{ color: 'var(--text-faintest)' }}>
+                <p className="text-[11px]" style={{ color: 'var(--text-faintest)' }}>
                   For business inquiries, partnerships, or support:<br />
                   <A href="mailto:info@touch-grass.fyi">info@touch-grass.fyi</A>
                 </p>
-                <p className="text-[10px]" style={{ color: 'var(--text-faintest)' }}>
+                <p className="text-[11px]" style={{ color: 'var(--text-faintest)' }}>
                   Found a bug? Let us know at <A href="mailto:info@touch-grass.fyi?subject=Bug Report">info@touch-grass.fyi</A>
                 </p>
               </div>
@@ -151,7 +157,7 @@ export default function AboutModal({ onClose }) {
         </div>
 
         <div className="mt-4 pt-3 text-center" style={{ borderTop: '1px solid var(--border)' }}>
-          <p className="text-[10px]" style={{ color: 'var(--text-faintest)' }}>
+          <p className="text-[11px]" style={{ color: 'var(--text-faintest)' }}>
             Made with 🌿 for people who need to go outside
           </p>
         </div>

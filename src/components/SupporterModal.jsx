@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useModalA11y } from '../hooks/useModalA11y';
 
 export default function SupporterModal({ onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const contentRef = useModalA11y(onClose);
 
   async function handlePay() {
     setLoading(true);
@@ -31,6 +33,10 @@ export default function SupporterModal({ onClose, onSuccess }) {
       onClick={onClose}
     >
       <div
+        ref={contentRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Support Touch Grass"
         className="w-[380px] rounded-2xl p-6 text-center"
         style={{ background: 'var(--panel-bg-solid)', border: '1px solid var(--border)' }}
         onClick={(e) => e.stopPropagation()}
@@ -46,7 +52,7 @@ export default function SupporterModal({ onClose, onSuccess }) {
         <div className="rounded-xl p-4 mb-5 text-left" style={{ background: 'var(--surface-overlay)', border: '1px solid var(--border)' }}>
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-bold" style={{ color: 'var(--text)' }}>Supporter</span>
-            <span className="text-lg font-extrabold" style={{ color: '#34d399' }}>$9.99 <span className="text-[10px] font-normal" style={{ color: 'var(--text-faintest)' }}>USD</span></span>
+            <span className="text-lg font-extrabold" style={{ color: '#34d399' }}>$9.99 <span className="text-[11px] font-normal" style={{ color: 'var(--text-faintest)' }}>USD</span></span>
           </div>
           <ul className="space-y-2">
             {[

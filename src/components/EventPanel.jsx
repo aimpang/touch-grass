@@ -111,10 +111,11 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
 
   // Expand visible count if selected event is beyond current slice
   const selectedIdx = selectedEvent ? sortedEvents.findIndex((e) => e.id === selectedEvent.id) : -1;
-  if (selectedIdx >= visibleCount) {
-    // Use a microtask to avoid setState during render warning
-    Promise.resolve().then(() => setVisibleCount(selectedIdx + 5));
-  }
+  useEffect(() => {
+    if (selectedIdx >= visibleCount) {
+      setVisibleCount(selectedIdx + 5);
+    }
+  }, [selectedIdx, visibleCount]);
 
   const displayEvents = mobile ? sortedEvents.slice(0, visibleCount) : sortedEvents;
   const hasMore = mobile && visibleCount < sortedEvents.length;
@@ -136,7 +137,7 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
             >
               ›
             </button>
-            <span className="text-[9px] font-bold tracking-[0.2em] [writing-mode:vertical-lr] opacity-60" style={{ color: 'var(--text-faint)' }}>
+            <span className="text-[9px] font-bold tracking-[0.2em] [writing-mode:vertical-lr]" style={{ color: 'var(--text-faintest)' }}>
               TOUCH GRASS
             </span>
             <div className="mt-auto mb-4">
@@ -165,11 +166,11 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                       Touch Grass
                     </span>
                   </h1>
-                  <p className="text-[10px] mt-1 font-medium tracking-wide flex items-center gap-1" style={{ color: 'var(--text-faint)' }}>
+                  <p className="text-[11px] mt-1 font-medium tracking-wide flex items-center gap-1" style={{ color: 'var(--text-faint)' }}>
                     {sortedEvents.length} things to do{city ? ` in ${city}` : ' nearby'}
                     <button
                       onClick={onBrowseCity}
-                      className="text-[9px] px-1.5 py-0.5 rounded-full transition-colors"
+                      className="text-[10px] px-1.5 py-0.5 rounded-full transition-colors"
                       style={{ background: 'var(--surface-overlay)', color: isSupporter ? '#34d399' : 'var(--text-faintest)' }}
                       title={isSupporter ? 'Browse another city' : 'Supporters can browse other cities'}
                     >
@@ -178,7 +179,7 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                     {isTeleported && (
                       <button
                         onClick={onGoHome}
-                        className="text-[9px] px-2 py-0.5 rounded-full transition-colors"
+                        className="text-[10px] px-2 py-0.5 rounded-full transition-colors"
                         style={{ background: 'rgba(59,130,246,0.15)', color: '#60a5fa' }}
                         title="Back to my location"
                       >
@@ -189,13 +190,13 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                 </div>
                 <div className="flex items-center gap-2">
                   {isSupporter ? (
-                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-full" style={{ background: 'rgba(52,211,153,0.15)', color: '#34d399' }}>
+                    <span className="text-[11px] font-bold px-2.5 py-1 rounded-full" style={{ background: 'rgba(52,211,153,0.15)', color: '#34d399' }}>
                       🌿 Supporter
                     </span>
                   ) : (
                     <button
                       onClick={onShowSupporter}
-                      className="text-[10px] font-medium px-2.5 py-1 rounded-full transition-colors"
+                      className="text-[11px] font-medium px-2.5 py-1 rounded-full transition-colors"
                       style={{ background: 'rgba(52,211,153,0.1)', color: '#34d399' }}
                     >
                       🌿 Support
@@ -224,6 +225,7 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search events, venues..."
+                  aria-label="Search events"
                   className="w-full text-[11px] pl-7 pr-7 py-1.5 rounded-lg outline-none transition-colors"
                   style={{ background: 'var(--surface-overlay)', border: '1px solid var(--border)', color: 'var(--text)' }}
                 />
@@ -231,7 +233,8 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                 {search && (
                   <button
                     onClick={() => setSearch('')}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] opacity-40 hover:opacity-80"
+                    aria-label="Clear search"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center text-[10px] opacity-40 hover:opacity-80"
                   >
                     ✕
                   </button>
@@ -242,14 +245,14 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
               {mobile && (
                 <button
                   onClick={() => setFiltersExpanded(!filtersExpanded)}
-                  className="w-full flex items-center justify-between text-[10px] font-medium px-2.5 py-1.5 rounded-lg mb-2 transition-colors"
+                  className="w-full flex items-center justify-between text-[11px] font-medium px-2.5 py-1.5 rounded-lg mb-2 transition-colors"
                   style={{ background: 'var(--surface-overlay)', color: 'var(--text-faint)' }}
                 >
                   <span className="flex items-center gap-1.5">
                     <span>🎛</span>
                     Filters
                     {hasActiveFilters && (
-                      <span className="text-[9px] px-1.5 py-0.5 rounded-full font-bold" style={{ background: 'rgba(52,211,153,0.2)', color: '#34d399' }}>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-full font-bold" style={{ background: 'rgba(52,211,153,0.2)', color: '#34d399' }}>
                         {activeFilters.length}
                       </span>
                     )}
@@ -269,8 +272,8 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                         <button
                           key={t.key}
                           onClick={() => { onTimeFilterChange(active ? 'anytime' : t.key); setShowDatePicker(false); }}
-                          title={t.label}
-                          className="shrink-0 text-sm w-7 h-7 rounded-full transition-all flex items-center justify-center"
+                          aria-label={t.label}
+                          className="shrink-0 text-sm w-9 h-9 rounded-full transition-all flex items-center justify-center"
                           style={{
                             background: active ? 'var(--surface-overlay-hover)' : 'var(--surface-overlay)',
                             border: `1px solid ${active ? 'var(--border-hover)' : 'transparent'}`,
@@ -282,8 +285,8 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                     })}
                     <button
                       onClick={() => setShowDatePicker(!showDatePicker)}
-                      title={dateRange ? `${dateRange.from}${dateRange.to && dateRange.to !== dateRange.from ? ` → ${dateRange.to}` : ''}` : 'Pick dates'}
-                      className="shrink-0 text-sm w-7 h-7 rounded-full transition-all flex items-center justify-center"
+                      aria-label={dateRange ? `Date range: ${dateRange.from}${dateRange.to && dateRange.to !== dateRange.from ? ` to ${dateRange.to}` : ''}` : 'Pick dates'}
+                      className="shrink-0 text-sm w-9 h-9 rounded-full transition-all flex items-center justify-center"
                       style={{
                         background: dateRange ? 'var(--surface-overlay-hover)' : 'var(--surface-overlay)',
                         border: `1px solid ${dateRange ? 'var(--border-hover)' : 'transparent'}`,
@@ -292,12 +295,12 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                       📅
                     </button>
 
-                    <div className="w-px h-5 shrink-0" style={{ background: 'var(--border)' }} />
+                    <div className="w-px h-6 shrink-0" style={{ background: 'var(--border)' }} />
 
                     <button
                       onClick={() => onPriceFilterChange(priceFilter === 'free' ? 'all' : 'free')}
-                      title="Free events only"
-                      className="shrink-0 text-sm w-7 h-7 rounded-full transition-all flex items-center justify-center"
+                      aria-label="Free events only"
+                      className="shrink-0 text-sm w-9 h-9 rounded-full transition-all flex items-center justify-center"
                       style={{
                         background: priceFilter === 'free' ? 'rgba(52,211,153,0.2)' : 'var(--surface-overlay)',
                         border: `1px solid ${priceFilter === 'free' ? 'rgba(52,211,153,0.35)' : 'transparent'}`,
@@ -312,8 +315,8 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                         <button
                           key={chip.key}
                           onClick={() => onToggleCategory(chip.key)}
-                          title={chip.label}
-                          className="shrink-0 text-sm w-7 h-7 rounded-full transition-all flex items-center justify-center"
+                          aria-label={`Filter by ${chip.label}`}
+                          className="shrink-0 text-sm w-9 h-9 rounded-full transition-all flex items-center justify-center"
                           style={{
                             background: active ? `${chip.color}25` : 'var(--surface-overlay)',
                             border: `1px solid ${active ? `${chip.color}40` : 'transparent'}`,
@@ -375,7 +378,7 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
 
             <div ref={listRef} className="flex-1 overflow-y-auto px-3 py-3 relative" data-eventlist onScroll={mobile ? handleScroll : undefined}>
               {isFallback && !loading && (
-                <div className="mb-3 px-3 py-2 rounded-lg text-[10px] font-medium text-center" style={{ background: 'rgba(251,191,36,0.1)', color: '#fbbf24' }}>
+                <div className="mb-3 px-3 py-2 rounded-lg text-[11px] font-medium text-center" style={{ background: 'rgba(251,191,36,0.1)', color: '#fbbf24' }}>
                   Demo mode — showing sample events. Live data temporarily unavailable.
                 </div>
               )}
@@ -403,7 +406,7 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                         boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
                       }}
                     >
-                      <div className="text-[9px] font-bold uppercase tracking-wider mb-1.5 flex items-center gap-1" style={{ color: '#fbbf24' }}>
+                      <div className="text-[10px] font-bold uppercase tracking-wider mb-1.5 flex items-center gap-1" style={{ color: '#fbbf24' }}>
                         <span>⭐</span> Promoted
                       </div>
                       <div className="grid gap-2 grid-cols-1 sm:grid-cols-2">
@@ -469,7 +472,7 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                       </button>
 
                       {showPast && (
-                        <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-2 mt-2 opacity-50">
+                        <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-2 mt-2 opacity-60">
                           {filteredPast.map((event) => (
                             <EventCard
                               key={event.id}
@@ -490,10 +493,10 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                   )}
                   {/* Disclaimer */}
                   <div className="mt-6 mb-2 px-2 py-3 rounded-xl text-center" style={{ background: 'var(--surface-overlay)' }}>
-                    <p className="text-[10px] leading-relaxed" style={{ color: 'var(--text-faintest)' }}>
+                    <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-faintest)' }}>
                       Don't see your event? We're working on a way for organizers to submit events directly. Stay tuned!
                     </p>
-                    <p className="text-[9px] mt-1" style={{ color: 'var(--text-faintest)', opacity: 0.6 }}>
+                    <p className="text-[10px] mt-1" style={{ color: 'var(--text-faintest)' }}>
                       <a href="mailto:info@touch-grass.fyi" className="underline">info@touch-grass.fyi</a>
                     </p>
                   </div>
