@@ -41,6 +41,11 @@ export function useHints({ isSupporter, eventCount, pinnedCount }) {
       show('promote-hint', 'Are you an event organizer? Hover any event card and tap 🚀 to promote it!', '🚀', null, 25000);
     }
 
+    // After 30s: suggest sharing
+    if (eventCount > 0) {
+      show('share-hint', 'Liking Touch Grass? Share it with your friends!', '💚', 'share', 30000);
+    }
+
     // After 5s: first-time hint about pinning
     if (pinnedCount === 0 && eventCount > 0) {
       show('pin-hint', 'Tip: Hover over an event card and tap 📌 to pin it for later!', '💡', null, 5000);
@@ -82,11 +87,11 @@ export default function HintToast({ hint, onDismiss, onAction }) {
               onClick={() => { onAction(hint.action); onDismiss(); }}
               className="text-[11px] font-bold mt-1.5 px-3 py-1 rounded-full transition-colors"
               style={{
-                background: hint.action === 'support' ? 'rgba(52,211,153,0.15)' : 'rgba(251,191,36,0.15)',
-                color: hint.action === 'support' ? '#34d399' : '#fbbf24',
+                background: hint.action === 'share' ? 'rgba(52,211,153,0.15)' : hint.action === 'support' ? 'rgba(52,211,153,0.15)' : 'rgba(251,191,36,0.15)',
+                color: hint.action === 'share' ? '#34d399' : hint.action === 'support' ? '#34d399' : '#fbbf24',
               }}
             >
-              {hint.action === 'support' ? 'Learn more' : 'Promote an event'}
+              {hint.action === 'support' ? 'Learn more' : hint.action === 'share' ? 'Share' : 'Promote an event'}
             </button>
           )}
         </div>

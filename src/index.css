@@ -212,6 +212,34 @@ html, body, #root {
   background: var(--surface-overlay-hover) !important;
 }
 
+/* City browse tooltip */
+.city-tooltip {
+  position: relative;
+}
+.city-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: var(--panel-bg-solid);
+  color: #34d399;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+.city-tooltip:hover::after,
+.city-tooltip:focus::after {
+  opacity: 1;
+}
+
 .infocard-cta-btn:hover {
   background: var(--cta-bg-hover) !important;
   border-color: var(--cta-border-hover) !important;

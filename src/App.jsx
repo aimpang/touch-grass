@@ -281,6 +281,14 @@ export default function App() {
         onAction={(action) => {
           if (action === 'support') setShowSupporter(true);
           if (action === 'promote') { /* future: open promote flow */ }
+          if (action === 'share') {
+            const url = 'https://touch-grass.fyi';
+            if (navigator.share) {
+              navigator.share({ title: 'Touch Grass', text: 'Find things to do outside!', url });
+            } else {
+              navigator.clipboard.writeText(url);
+            }
+          }
         }}
       />
 

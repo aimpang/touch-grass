@@ -170,9 +170,10 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
                     {sortedEvents.length} things to do{city ? ` in ${city}` : ' nearby'}
                     <button
                       onClick={onBrowseCity}
-                      className="text-[10px] px-1.5 py-0.5 rounded-full transition-colors"
+                      className={`text-[10px] px-1.5 py-0.5 rounded-full transition-colors${!isSupporter ? ' city-tooltip' : ''}`}
                       style={{ background: 'var(--surface-overlay)', color: isSupporter ? '#34d399' : 'var(--text-faintest)' }}
-                      title={isSupporter ? 'Browse another city' : 'Supporters can browse other cities'}
+                      title={isSupporter ? 'Browse another city' : undefined}
+                      data-tooltip={!isSupporter ? 'Want to browse other cities?' : undefined}
                     >
                       🌍
                     </button>
