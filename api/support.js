@@ -14,12 +14,12 @@ export default async function handler(req, res) {
       payment_method_types: ['card'],
       line_items: [{
         price_data: {
-          currency: 'usd',
+          currency: 'cad',
           product_data: {
             name: 'Touch Grass Supporter',
             description: 'One-time support — unlimited pins, city browsing, supporter badge 🌿',
           },
-          unit_amount: 999,
+          unit_amount: 2499,
         },
         quantity: 1,
       }],

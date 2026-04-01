@@ -5,14 +5,14 @@ const TIERS = [
   {
     key: 'boost',
     name: 'Boost',
-    price: '$149',
+    price: '$149 CAD',
     duration: '7 days',
     features: ['Sorted above regular events', '"Promoted" badge on card', 'Bypass all user filters'],
   },
   {
     key: 'spotlight',
     name: 'Spotlight',
-    price: '$249',
+    price: '$249 CAD',
     duration: '14 days',
     features: ['Everything in Boost', 'Golden glow animation', 'Highlighted map marker', 'Priority placement', 'Double the exposure time'],
   },

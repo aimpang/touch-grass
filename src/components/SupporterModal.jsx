@@ -52,7 +52,7 @@ export default function SupporterModal({ onClose, onSuccess }) {
         <div className="rounded-xl p-4 mb-5 text-left" style={{ background: 'var(--surface-overlay)', border: '1px solid var(--border)' }}>
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-bold" style={{ color: 'var(--text)' }}>Supporter</span>
-            <span className="text-lg font-extrabold" style={{ color: '#34d399' }}>$9.99 <span className="text-[11px] font-normal" style={{ color: 'var(--text-faintest)' }}>USD</span></span>
+            <span className="text-lg font-extrabold" style={{ color: '#34d399' }}>$24.99 <span className="text-[11px] font-normal" style={{ color: 'var(--text-faintest)' }}>CAD</span></span>
           </div>
           <ul className="space-y-2">
             {[
@@ -78,7 +78,7 @@ export default function SupporterModal({ onClose, onSuccess }) {
           className="w-full py-3 rounded-xl font-bold text-sm text-white transition-colors"
           style={{ background: loading ? '#1a8a5e' : '#34d399', opacity: loading ? 0.7 : 1 }}
         >
-          {loading ? 'Redirecting to Stripe...' : 'Support for $9.99 USD'}
+          {loading ? 'Redirecting to Stripe...' : 'Support for $24.99 CAD'}
         </button>
 
         <button

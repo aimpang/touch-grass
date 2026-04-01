@@ -113,7 +113,7 @@ export default function AboutModal({ onClose }) {
                 before making plans. We are not responsible for inaccurate or outdated information.
               </P>
               <P title="Supporter Program">
-                The supporter program is a one-time voluntary payment ($9.99 CAD) that unlocks
+                The supporter program is a one-time voluntary payment ($24.99 CAD) that unlocks
                 additional features. It is non-refundable. Features may change over time.
               </P>
               <P title="Event Promotions">
