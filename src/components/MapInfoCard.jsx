@@ -160,7 +160,7 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
           boxShadow: `0 8px 32px rgba(0,0,0,0.5), 0 0 20px ${cat.bg}15`,
           overflow: 'hidden',
           position: 'relative',
-          ...(mobile ? { maxHeight: 160 } : {}),
+          ...(mobile ? { maxHeight: 200 } : {}),
         }}
       >
         {/* Accent bar */}
@@ -204,6 +204,14 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
                     {event.free ? 'Free' : event.price ? `$${event.price}` : 'Paid'}
                   </span>
                 </div>
+                {event.description && (
+                  <div style={{
+                    fontSize: 9, color: 'var(--text-faintest)', lineHeight: 1.4, marginTop: 4,
+                    display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                  }}>
+                    {event.description}
+                  </div>
+                )}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 3, flexShrink: 0 }}>
                 {onTogglePin && (
