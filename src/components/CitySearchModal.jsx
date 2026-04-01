@@ -11,14 +11,23 @@ export default function CitySearchModal({ onSelect, onClose }) {
     setLoading(true);
     setResults(null);
     try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=6&addressdetails=1`);
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=12&addressdetails=1&featuretype=city`);
       const data = await res.json();
-      setResults(data.map((r) => ({
-        name: r.address?.city || r.address?.town || r.address?.village || r.display_name.split(',')[0],
-        display: r.display_name.split(',').slice(0, 3).join(', '),
-        lat: parseFloat(r.lat),
-        lng: parseFloat(r.lon),
-      })));
+      // Only keep results that are actual cities/towns/villages
+      const cityTypes = new Set(['city', 'town', 'village', 'municipality', 'hamlet']);
+      const cities = data
+        .filter((r) => {
+          const cityName = r.address?.city || r.address?.town || r.address?.village || r.address?.municipality;
+          return cityName || cityTypes.has(r.type);
+        })
+        .slice(0, 6)
+        .map((r) => ({
+          name: r.address?.city || r.address?.town || r.address?.village || r.address?.municipality || r.display_name.split(',')[0],
+          display: r.display_name.split(',').slice(0, 3).join(', '),
+          lat: parseFloat(r.lat),
+          lng: parseFloat(r.lon),
+        }));
+      setResults(cities);
     } catch {
       setResults([]);
     }
