@@ -48,6 +48,7 @@ export default forwardRef(function EventCard({ event, selected, pinned, onToggle
         background: `linear-gradient(145deg, ${cat.color}${isSoon ? '12' : '0a'} 0%, var(--card-bg) 100%)`,
         border: `1px solid ${selected ? `${cat.color}70` : baseBorder}`,
         opacity: isEnded ? 0.5 : 1,
+        touchAction: 'manipulation',
         '--glow-base': `0 0 12px ${cat.color}15, 0 0 0 1px ${cat.color}20`,
         '--glow-peak': `0 0 24px ${cat.color}30, 0 0 0 1px ${cat.color}40`,
         '--inspect-color': cat.color,
