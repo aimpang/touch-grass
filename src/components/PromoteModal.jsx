@@ -21,6 +21,7 @@ const TIERS = [
 export default function PromoteModal({ event, onClose }) {
   const [selectedTier, setSelectedTier] = useState('spotlight');
   const [loading, setLoading] = useState(false);
+  const [opened, setOpened] = useState(false);
   const [error, setError] = useState(null);
   const contentRef = useModalA11y(onClose);
 
@@ -39,7 +40,8 @@ export default function PromoteModal({ event, onClose }) {
       });
       const data = await res.json();
       if (data.url) {
-        window.location.href = data.url;
+        window.open(data.url, '_blank', 'noopener');
+        setOpened(true);
       } else {
         setError(data.error || 'Failed to create checkout session');
       }
@@ -128,7 +130,7 @@ export default function PromoteModal({ event, onClose }) {
             opacity: loading ? 0.7 : 1,
           }}
         >
-          {loading ? 'Redirecting to Stripe...' : `Pay ${TIERS.find((t) => t.key === selectedTier)?.price} — Promote`}
+          {loading ? 'Opening Stripe...' : opened ? 'Complete payment in Stripe tab' : `Pay ${TIERS.find((t) => t.key === selectedTier)?.price} — Promote`}
         </button>
 
         <p className="text-[10px] text-center mt-3" style={{ color: 'var(--text-faintest)' }}>

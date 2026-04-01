@@ -36,7 +36,12 @@ export default function App() {
   const [dateRange, setDateRange] = useState(null);
   const [highlightedEvent, setHighlightedEvent] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [pinnedIds, setPinnedIds] = useState(new Set());
+  const [pinnedIds, setPinnedIds] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('pinnedIds'));
+      return saved?.length ? new Set(saved) : new Set();
+    } catch { return new Set(); }
+  });
   const [panelCollapsed, setPanelCollapsed] = useState(false);
   const lastSelectTime = useRef(0);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -68,6 +73,10 @@ export default function App() {
   const [refreshKey, setRefreshKey] = useState(0);
   // Mobile: bottom sheet expanded state
   const [sheetExpanded, setSheetExpanded] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem('pinnedIds', JSON.stringify([...pinnedIds]));
+  }, [pinnedIds]);
 
   const MAX_FREE_PINS = 2;
 

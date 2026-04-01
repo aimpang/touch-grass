@@ -1,10 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useModalA11y } from '../hooks/useModalA11y';
 
 export default function SupporterModal({ onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
+  const [opened, setOpened] = useState(false);
   const [error, setError] = useState(null);
   const contentRef = useModalA11y(onClose);
+
+  // Listen for supporter activation from Stripe return tab
+  useEffect(() => {
+    if (!opened) return;
+    function onStorage(e) {
+      if (e.key === 'touchgrass-supporter' && e.newValue === 'true') {
+        onSuccess?.();
+        onClose();
+      }
+    }
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, [opened, onSuccess, onClose]);
 
   async function handlePay() {
     setLoading(true);
@@ -16,7 +30,8 @@ export default function SupporterModal({ onClose, onSuccess }) {
       });
       const data = await res.json();
       if (data.url) {
-        window.location.href = data.url;
+        window.open(data.url, '_blank', 'noopener');
+        setOpened(true);
       } else {
         setError(data.error || 'Failed to create checkout');
       }
@@ -78,7 +93,7 @@ export default function SupporterModal({ onClose, onSuccess }) {
           className="w-full py-3 rounded-xl font-bold text-sm text-white transition-colors"
           style={{ background: loading ? '#1a8a5e' : '#34d399', opacity: loading ? 0.7 : 1 }}
         >
-          {loading ? 'Redirecting to Stripe...' : 'Support for $24.99 CAD'}
+          {loading ? 'Opening Stripe...' : opened ? 'Complete payment in Stripe tab' : 'Support for $24.99 CAD'}
         </button>
 
         <button
