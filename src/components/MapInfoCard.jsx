@@ -204,17 +204,6 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
                     {event.free ? 'Free' : event.price ? `$${event.price}` : 'Paid'}
                   </span>
                 </div>
-                {(event.url || event.source === 'ticketmaster') && (
-                  <a
-                    href={event.url || `https://www.google.com/search?q=${encodeURIComponent(`${event.name} ${event.venue || ''}`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    style={{ display: 'inline-block', fontSize: 9, color: cat.bg, fontWeight: 600, marginTop: 5, textDecoration: 'none' }}
-                  >
-                    {event.source === 'ticketmaster' ? '🎟️ Tickets ↗' : 'Details ↗'}
-                  </a>
-                )}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 3, flexShrink: 0 }}>
                 {onTogglePin && (
@@ -240,6 +229,23 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
                 >✕</button>
               </div>
             </div>
+            {(event.url || event.source === 'ticketmaster') && (
+              <a
+                href={event.url || `https://www.google.com/search?q=${encodeURIComponent(`${event.name} ${event.venue || ''}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+                  marginTop: 6, padding: '6px 0', borderRadius: 8,
+                  background: `${cat.bg}18`, color: cat.bg,
+                  fontSize: 11, fontWeight: 700, textDecoration: 'none',
+                  border: `1px solid ${cat.bg}25`,
+                }}
+              >
+                {event.source === 'ticketmaster' ? '🎟️ Get Tickets →' : '🔗 Event Details →'}
+              </a>
+            )}
           </div>
         ) : (
           /* ── DESKTOP: full card ── */
