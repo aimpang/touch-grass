@@ -21,7 +21,7 @@ const CARD_W_DESKTOP = 280;
 const CARD_W_MOBILE = 220;
 const CARD_GAP = 32;
 
-export default function MapInfoCard({ event, onClose, pinned, onTogglePin }) {
+export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobile }) {
   const map = useMap();
   const [pos, setPos] = useState(null);
   const [side, setSide] = useState('right');
@@ -156,15 +156,94 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin }) {
           background: 'var(--infocard-bg)',
           backdropFilter: 'blur(20px)',
           border: `1px solid ${cat.bg}30`,
-          borderRadius: 14,
+          borderRadius: mobile ? 10 : 14,
           boxShadow: `0 8px 32px rgba(0,0,0,0.5), 0 0 20px ${cat.bg}15`,
           overflow: 'hidden',
           position: 'relative',
+          ...(mobile ? { maxHeight: 160 } : {}),
         }}
       >
         {/* Accent bar */}
         <div style={{ height: 2, background: `linear-gradient(90deg, ${cat.bg}, ${cat.light})` }} />
 
+        {mobile ? (
+          /* ── MOBILE: compact fixed-height card ── */
+          <div style={{ padding: '8px 10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 6 }}>
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{event.name}</div>
+                <div style={{ fontSize: 9, color: 'var(--text-faint)', marginTop: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  📍 {event.venue}
+                </div>
+                <div style={{ fontSize: 9, color: 'var(--text-faint)', marginTop: 2 }}>
+                  {dateStr} · {timeStr}
+                  {event.distance != null && <span> · {event.distance.toFixed(1)}km</span>}
+                </div>
+                <div style={{ display: 'flex', gap: 4, marginTop: 5, flexWrap: 'wrap' }}>
+                  {(() => {
+                    const status = getEventStatus(event);
+                    return status ? (
+                      <span style={{
+                        fontSize: 8, fontWeight: 700, padding: '1px 6px', borderRadius: 99,
+                        background: status.bgColor, color: status.color,
+                        display: 'flex', alignItems: 'center', gap: 3,
+                      }}>
+                        {status.key === 'live' && <span style={{ width: 4, height: 4, borderRadius: '50%', background: status.color, display: 'inline-block' }} />}
+                        {status.label}
+                      </span>
+                    ) : null;
+                  })()}
+                  <span style={{ fontSize: 8, fontWeight: 600, padding: '1px 6px', borderRadius: 99, background: `${cat.bg}20`, color: cat.light }}>
+                    {event.category}
+                  </span>
+                  <span style={{
+                    fontSize: 8, fontWeight: 700, padding: '1px 6px', borderRadius: 99,
+                    background: event.free ? 'rgba(34,197,94,0.15)' : event.price ? 'rgba(245,158,11,0.15)' : 'rgba(115,115,115,0.15)',
+                    color: event.free ? '#4ade80' : event.price ? '#fbbf24' : '#a3a3a3',
+                  }}>
+                    {event.free ? 'Free' : event.price ? `$${event.price}` : 'Paid'}
+                  </span>
+                </div>
+                {(event.url || event.source === 'ticketmaster') && (
+                  <a
+                    href={event.url || `https://www.google.com/search?q=${encodeURIComponent(`${event.name} ${event.venue || ''}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    style={{ display: 'inline-block', fontSize: 9, color: cat.bg, fontWeight: 600, marginTop: 5, textDecoration: 'none' }}
+                  >
+                    {event.source === 'ticketmaster' ? '🎟️ Tickets ↗' : 'Details ↗'}
+                  </a>
+                )}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 3, flexShrink: 0 }}>
+                {onTogglePin && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onTogglePin(event.id); }}
+                    style={{
+                      width: 20, height: 20, borderRadius: 5, border: 'none',
+                      background: pinned ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.06)',
+                      color: pinned ? '#60a5fa' : 'var(--text-faintest)',
+                      cursor: 'pointer', fontSize: 10, display: 'flex',
+                      alignItems: 'center', justifyContent: 'center',
+                    }}
+                  >📌</button>
+                )}
+                <button
+                  onClick={onClose}
+                  style={{
+                    width: 20, height: 20, borderRadius: 5, border: 'none',
+                    background: 'rgba(255,255,255,0.06)', color: 'var(--text-faintest)',
+                    cursor: 'pointer', fontSize: 9, display: 'flex',
+                    alignItems: 'center', justifyContent: 'center',
+                  }}
+                >✕</button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* ── DESKTOP: full card ── */
+          <>
         {/* Header */}
         <div style={{ padding: '12px 14px 8px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
@@ -328,6 +407,8 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin }) {
             </a>
           )}
         </div>
+          </>
+        )}
       </div>
     </div>,
     container

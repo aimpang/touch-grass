@@ -352,7 +352,7 @@ const circlePathOptions = {
 };
 
 // Hide info card during zoom/pan animations so it doesn't appear mispositioned
-function ZoomAwareInfoCard({ selectedEvent, onSelectEvent, pinned, onTogglePin }) {
+function ZoomAwareInfoCard({ selectedEvent, onSelectEvent, pinned, onTogglePin, mobile }) {
   const map = useMap();
   const [moving, setMoving] = React.useState(false);
 
@@ -365,7 +365,7 @@ function ZoomAwareInfoCard({ selectedEvent, onSelectEvent, pinned, onTogglePin }
   }, [map]);
 
   if (!selectedEvent || moving) return null;
-  return <MapInfoCard event={selectedEvent} onClose={() => onSelectEvent?.(null)} pinned={pinned} onTogglePin={onTogglePin} />;
+  return <MapInfoCard event={selectedEvent} onClose={() => onSelectEvent?.(null)} pinned={pinned} onTogglePin={onTogglePin} mobile={mobile} />;
 }
 
 export default function EventMap({ location, homeLocation: homeLoc, events, radiusKm, highlightedEvent, selectedEvent, onSelectEvent, pinnedIds, onTogglePin, panelCollapsed, onAbout, mobile, lastSelectTime: externalLastSelectTime }) {
@@ -430,6 +430,7 @@ export default function EventMap({ location, homeLocation: homeLoc, events, radi
         onSelectEvent={onSelectEvent}
         pinned={selectedEvent ? pinnedIds?.has(selectedEvent.id) : false}
         onTogglePin={onTogglePin}
+        mobile={mobile}
       />
     </MapContainer>
   );
