@@ -164,7 +164,6 @@ export default function App() {
     onEventClick: (event) => {
       if (event) lastSelectTime.current = Date.now();
       setSelectedEvent(event);
-      if (isMobile && event) setSheetExpanded(false);
     },
     selectedEvent,
     pinnedIds,
@@ -181,34 +180,35 @@ export default function App() {
       )}
 
       {isMobile ? (
-        /* ── MOBILE LAYOUT ── */
-        <>
-          {/* Map fills the screen */}
-          <Suspense fallback={<div className="h-full w-full" style={{ background: 'var(--bg)' }} />}>
-            <EventMap
-              location={location}
-              homeLocation={homeLocation}
-              events={events}
-              radiusKm={radius}
-              highlightedEvent={highlightedEvent}
-              selectedEvent={selectedEvent}
-              onSelectEvent={setSelectedEvent}
-              pinnedIds={pinnedIds}
-              onTogglePin={togglePin}
-              panelCollapsed={false}
-              onAbout={() => setShowAbout(true)}
-              lastSelectTime={lastSelectTime}
-              mobile
-            />
-          </Suspense>
+        /* ── MOBILE LAYOUT — flexbox split, map resizes with sheet ── */
+        <div className="h-full w-full flex flex-col">
+          {/* Map takes remaining space */}
+          <div className="relative" style={{ flex: sheetExpanded ? '1 1 0' : '1 1 100%', transition: 'flex 0.25s ease-out', minHeight: 0 }}>
+            <Suspense fallback={<div className="h-full w-full" style={{ background: 'var(--bg)' }} />}>
+              <EventMap
+                location={location}
+                homeLocation={homeLocation}
+                events={events}
+                radiusKm={radius}
+                highlightedEvent={highlightedEvent}
+                selectedEvent={selectedEvent}
+                onSelectEvent={setSelectedEvent}
+                pinnedIds={pinnedIds}
+                onTogglePin={togglePin}
+                panelCollapsed={!sheetExpanded}
+                onAbout={() => setShowAbout(true)}
+                lastSelectTime={lastSelectTime}
+                mobile
+              />
+            </Suspense>
+          </div>
 
-          {/* Bottom sheet — GPU-accelerated with transform instead of height */}
+          {/* Bottom sheet */}
           <div
-            className="absolute bottom-0 left-0 right-0 z-[1100] flex flex-col will-change-transform"
+            className="flex flex-col shrink-0"
             style={{
-              height: '50vh',
-              transform: sheetExpanded ? 'translateY(0)' : `translateY(calc(100% - 48px))`,
-              transition: 'transform 0.25s ease-out',
+              height: sheetExpanded ? '50vh' : 48,
+              transition: 'height 0.25s ease-out',
               background: 'var(--panel-bg-solid)',
               borderTop: '1px solid var(--border)',
               borderRadius: '14px 14px 0 0',
@@ -236,7 +236,7 @@ export default function App() {
               onToggle={() => setSheetExpanded(!sheetExpanded)}
             />
           </div>
-        </>
+        </div>
       ) : (
         /* ── DESKTOP LAYOUT ── */
         <div className="h-full w-full flex">
