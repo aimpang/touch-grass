@@ -1,5 +1,6 @@
 import { forwardRef } from 'react';
 import { getEventStatus } from '../utils/eventStatus';
+import { useTheme } from '../hooks/useTheme';
 
 const CAT_STYLE = {
   Music:     { color: '#a78bfa', emoji: '🎵' },
@@ -18,6 +19,8 @@ const CAT_STYLE = {
 const DEFAULT_STYLE = { color: '#94a3b8', emoji: '📌' };
 
 export default forwardRef(function EventCard({ event, selected, pinned, onTogglePin, onHover, onClick, onPromote, compact }, ref) {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const timeStr = new Date(event.date).toLocaleTimeString('en-US', {
     hour: 'numeric',
     minute: '2-digit',
@@ -45,8 +48,10 @@ export default forwardRef(function EventCard({ event, selected, pinned, onToggle
       ref={ref}
       className={`event-card relative rounded-2xl cursor-pointer group ${isSpotlight ? 'event-card-spotlight' : isPromoted ? 'event-card-boost' : isGlowing ? 'event-card-glow' : ''} ${selected ? 'event-card-inspect' : ''}`}
       style={{
-        background: `linear-gradient(145deg, ${cat.color}${isSoon ? '12' : '0a'} 0%, var(--card-bg) 100%)`,
-        border: `1px solid ${selected ? `${cat.color}70` : baseBorder}`,
+        background: isDark
+          ? `linear-gradient(145deg, ${cat.color}${isSoon ? '12' : '0a'} 0%, var(--card-bg) 100%)`
+          : `${cat.color}${isSoon ? '38' : '28'}`,
+        border: `1px solid ${selected ? `${cat.color}99` : isDark ? baseBorder : `${cat.color}55`}`,
         opacity: isEnded ? 0.5 : 1,
         touchAction: 'manipulation',
         '--glow-base': `0 0 12px ${cat.color}15, 0 0 0 1px ${cat.color}20`,
@@ -82,7 +87,7 @@ export default forwardRef(function EventCard({ event, selected, pinned, onToggle
           </div>
           <div className="flex items-center gap-1">
             {isPromoted && (
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: 'rgba(251,191,36,0.15)', color: '#fbbf24' }}>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: 'rgba(251,191,36,0.15)', color: isDark ? '#fbbf24' : '#b45309' }}>
                 {isSpotlight ? '⭐ Promoted' : 'Promoted'}
               </span>
             )}

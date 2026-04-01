@@ -2,6 +2,7 @@ import { useMap } from 'react-leaflet';
 import { createPortal } from 'react-dom';
 import { useEffect, useState, useRef } from 'react';
 import { getEventStatus } from '../utils/eventStatus';
+import { useTheme } from '../hooks/useTheme';
 
 const CATEGORY_COLORS = {
   Music:     { bg: '#8b5cf6', light: '#c4b5fd' },
@@ -23,6 +24,8 @@ const CARD_GAP = 32;
 
 export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobile }) {
   const map = useMap();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [pos, setPos] = useState(null);
   const [side, setSide] = useState('right');
   const cardRef = useRef(null);
@@ -199,7 +202,7 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
                   <span style={{
                     fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 99,
                     background: event.free ? 'rgba(34,197,94,0.15)' : event.price ? 'rgba(245,158,11,0.15)' : 'rgba(115,115,115,0.15)',
-                    color: event.free ? '#4ade80' : event.price ? '#fbbf24' : '#a3a3a3',
+                    color: event.free ? (isDark ? '#4ade80' : '#16a34a') : event.price ? (isDark ? '#fbbf24' : '#b45309') : (isDark ? '#a3a3a3' : '#737373'),
                   }}>
                     {event.free ? 'Free' : event.price ? `$${event.price}` : 'Paid'}
                   </span>
@@ -220,7 +223,7 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
                     aria-label={pinned ? 'Unpin event' : 'Pin event'}
                     style={{
                       width: 28, height: 28, borderRadius: 6, border: 'none',
-                      background: pinned ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.06)',
+                      background: pinned ? 'rgba(59,130,246,0.15)' : 'var(--surface-overlay)',
                       color: pinned ? '#60a5fa' : 'var(--text-faintest)',
                       cursor: 'pointer', fontSize: 11, display: 'flex',
                       alignItems: 'center', justifyContent: 'center',
@@ -232,7 +235,7 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
                   aria-label="Close info card"
                   style={{
                     width: 28, height: 28, borderRadius: 6, border: 'none',
-                    background: 'rgba(255,255,255,0.06)', color: 'var(--text-faintest)',
+                    background: 'var(--surface-overlay)', color: 'var(--text-faintest)',
                     cursor: 'pointer', fontSize: 10, display: 'flex',
                     alignItems: 'center', justifyContent: 'center',
                   }}
@@ -286,7 +289,7 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
                 })()}
                 <span style={{
                   fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 99,
-                  background: `${cat.bg}20`, color: cat.light,
+                  background: `${cat.bg}20`, color: isDark ? cat.light : cat.bg,
                 }}>
                   {event.category}
                 </span>
@@ -302,7 +305,7 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
                   <span style={{
                     fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 99,
                     background: event.free ? 'rgba(34,197,94,0.15)' : event.price ? 'rgba(245,158,11,0.15)' : 'rgba(115,115,115,0.15)',
-                    color: event.free ? '#4ade80' : event.price ? '#fbbf24' : '#a3a3a3',
+                    color: event.free ? (isDark ? '#4ade80' : '#16a34a') : event.price ? (isDark ? '#fbbf24' : '#b45309') : (isDark ? '#a3a3a3' : '#737373'),
                   }}>
                     {event.free ? 'Free' : event.price ? `From $${event.price}` : 'Paid'}
                   </span>
@@ -316,7 +319,7 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
                   aria-label={pinned ? 'Unpin event' : 'Pin event'}
                   style={{
                     width: 28, height: 28, borderRadius: 6, border: 'none',
-                    background: pinned ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.06)',
+                    background: pinned ? 'rgba(59,130,246,0.15)' : 'var(--surface-overlay)',
                     color: pinned ? '#60a5fa' : 'var(--text-faintest)',
                     cursor: 'pointer', fontSize: 12, display: 'flex',
                     alignItems: 'center', justifyContent: 'center',
@@ -331,7 +334,7 @@ export default function MapInfoCard({ event, onClose, pinned, onTogglePin, mobil
                 className="infocard-close-btn"
                 style={{
                   width: 28, height: 28, borderRadius: 6, border: 'none',
-                  background: 'rgba(255,255,255,0.06)', color: 'var(--text-faintest)',
+                  background: 'var(--surface-overlay)', color: 'var(--text-faintest)',
                   cursor: 'pointer', fontSize: 11, display: 'flex',
                   alignItems: 'center', justifyContent: 'center',
                 }}
@@ -438,7 +441,7 @@ function InfoRow({ icon, color, children }) {
         background: `${color}12`, display: 'flex',
         alignItems: 'center', justifyContent: 'center',
       }}>
-        <IconSvg name={icon} color="#8a8a8a" />
+        <IconSvg name={icon} color="var(--text-faint)" />
       </div>
       <div style={{ minWidth: 0, flex: 1, paddingTop: 2 }}>{children}</div>
     </div>

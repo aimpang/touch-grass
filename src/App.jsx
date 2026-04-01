@@ -221,7 +221,7 @@ export default function App() {
               background: 'var(--panel-bg-solid)',
               borderTop: '1px solid var(--border)',
               borderRadius: '14px 14px 0 0',
-              boxShadow: '0 -4px 20px rgba(0,0,0,0.3)',
+              boxShadow: 'var(--sheet-shadow)',
             }}
           >
             {/* Drag handle + peek bar */}

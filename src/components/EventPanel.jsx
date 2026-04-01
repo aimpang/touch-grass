@@ -126,7 +126,7 @@ export default function EventPanel({ events, pastEvents = [], city, loading, isF
         ? 'flex-1 flex flex-col overflow-hidden min-h-0'
         : 'h-full shrink-0 backdrop-blur-xl flex flex-col overflow-hidden transition-[width] duration-300 border-r'
       }
-      style={mobile ? {} : { width: collapsed ? 48 : '50vw', maxWidth: collapsed ? 48 : 720, background: 'var(--panel-bg)', borderColor: 'var(--border)' }}
+      style={mobile ? {} : { width: collapsed ? 48 : '50vw', maxWidth: collapsed ? 48 : 720, background: 'var(--panel-bg)', borderColor: 'var(--border)', boxShadow: 'var(--panel-shadow)' }}
     >
         {!mobile && collapsed ? (
           <div className="flex flex-col items-center pt-3 gap-3 w-full h-full" style={{ background: 'var(--panel-bg)' }}>

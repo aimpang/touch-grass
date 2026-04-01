@@ -59,15 +59,17 @@ function buildMarkerIcon(category, state, theme = 'dark') {
   const isActive = isHighlighted || isSelected || isPromoted;
   const isDark = theme === 'dark';
 
-  // Theme-aware marker background
+  // Theme-aware marker styling
+  // Dark: dark bg + colored border/icon  |  Light: solid color fill + white icon (reversed)
   const markerBg = isDark
     ? `rgba(18, 18, 28, ${isActive ? '0.92' : '0.8'})`
-    : `rgba(240, 238, 232, ${isActive ? '0.96' : '0.9'})`;
+    : isPromoted ? '#fbbf24' : color;
+  const iconColor = isDark ? color : 'rgba(255,255,255,0.95)';
 
   // Sizes
   const dot = isActive ? 36 : 28;
   const half = dot / 2;
-  const svgIcon = (CAT_SVG[category] || '<circle cx="12" cy="12" r="4" fill="none" stroke="FG" stroke-width="2"/>').replace(/FG/g, color);
+  const svgIcon = (CAT_SVG[category] || '<circle cx="12" cy="12" r="4" fill="none" stroke="FG" stroke-width="2"/>').replace(/FG/g, iconColor);
   const iconSz = isActive ? 18 : 14;
 
   const html = `
@@ -78,18 +80,18 @@ function buildMarkerIcon(category, state, theme = 'dark') {
       ${isSelected ? `<div style="
         position: absolute; inset: -6px; border-radius: 50%;
         background: ${color};
-        opacity: 0.15;
+        opacity: ${isDark ? '0.15' : '0.25'};
         animation: markerPing 1.8s cubic-bezier(0,0,0.2,1) infinite;
       "></div>` : ''}
       ${isActive ? `<div style="
         position: absolute; inset: -3px; border-radius: 50%;
-        background: ${color}; opacity: 0.10;
+        background: ${color}; opacity: ${isDark ? '0.10' : '0.20'};
       "></div>` : ''}
       <div style="
         width: ${dot}px; height: ${dot}px; border-radius: 50%;
         background: ${markerBg};
-        border: ${isPromoted ? '2px solid #fbbf24' : `1.5px solid ${color}${isActive ? '99' : '55'}`};
-        ${isActive ? `box-shadow: ${isPromoted ? '0 0 16px rgba(251,191,36,0.35)' : `0 0 16px ${color}40`};` : ''}
+        border: ${isPromoted ? '2px solid #fbbf24' : isDark ? `${isActive ? '2px' : '1.5px'} solid ${color}${isActive ? 'cc' : '55'}` : `${isActive ? '2px' : '1.5px'} solid ${color}`};
+        box-shadow: ${isPromoted ? '0 0 16px rgba(251,191,36,0.35)' : isActive ? `0 0 16px ${color}40, 0 2px 8px rgba(0,0,0,${isDark ? '0.3' : '0.2'})` : isDark ? 'none' : `0 2px 6px rgba(0,0,0,0.22)`};
         display: flex; align-items: center; justify-content: center;
       ">
         <svg width="${iconSz}" height="${iconSz}" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="display:block;">
@@ -298,7 +300,7 @@ const zoomBtnStyle = {
   fontSize: 18, fontWeight: 300, lineHeight: 1,
   display: 'flex', alignItems: 'center', justifyContent: 'center',
   backdropFilter: 'blur(12px)',
-  borderBottom: '1px solid rgba(255,255,255,0.06)',
+  borderBottom: '1px solid var(--border)',
   transition: 'color 0.15s, background 0.15s',
 };
 
@@ -396,6 +398,7 @@ export default function EventMap({ location, homeLocation: homeLoc, events, radi
         key={theme}
         url={TILES[theme]}
         attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+        className="map-tiles"
         updateWhenZooming={false}
         updateWhenIdle={true}
         keepBuffer={2}
